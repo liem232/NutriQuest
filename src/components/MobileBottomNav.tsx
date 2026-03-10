@@ -1,20 +1,26 @@
 import { NavLink } from "react-router-dom";
 import { renderIcon } from "@/lib/icons";
-
-const items = [
-  { to: "/dashboard", label: "Дом", icon: "solar:home-2-bold-duotone" },
-  { to: "/diary", label: "Дневник", icon: "solar:notebook-bold-duotone" },
-  { to: "/products", label: "Поиск", icon: "solar:magnifer-bold-duotone" },
-  { to: "/achievements", label: "Титулы", icon: "solar:cup-star-bold-duotone" },
-  { to: "/profile", label: "Я", icon: "solar:user-bold-duotone" },
-] as const;
+import { useAuth } from "@/contexts/AuthContext";
 
 export function MobileBottomNav() {
+  const { isAdmin } = useAuth();
+
+  const items = [
+    { to: "/dashboard", label: "Дом", icon: "solar:home-2-bold-duotone" },
+    { to: "/diary", label: "Дневник", icon: "solar:notebook-bold-duotone" },
+    { to: "/products", label: "Поиск", icon: "solar:magnifer-bold-duotone" },
+    { to: "/achievements", label: "Титулы", icon: "solar:cup-star-bold-duotone" },
+    { to: "/profile", label: "Я", icon: "solar:user-bold-duotone" },
+    ...(isAdmin
+      ? ([{ to: "/admin", label: "Админ", icon: "solar:shield-check-bold-duotone" }] as const)
+      : ([] as const)),
+  ] as const;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden">
       <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6 pb-[max(env(safe-area-inset-bottom),0px)]">
         <div className="glass-surface border border-border/60 rounded-2xl mb-3">
-          <div className="grid grid-cols-5">
+          <div className={"grid " + (items.length === 6 ? "grid-cols-6" : "grid-cols-5")}>
             {items.map((item) => (
               <NavLink
                 key={item.to}

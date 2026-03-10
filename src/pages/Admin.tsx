@@ -443,7 +443,7 @@ const Admin = () => {
       </div>
 
       <Tabs defaultValue="users">
-        <TabsList>
+        <TabsList className="w-full overflow-x-auto whitespace-nowrap justify-start">
           <TabsTrigger value="users">Пользователи</TabsTrigger>
           <TabsTrigger value="products">Модерация ({pendingProducts.length})</TabsTrigger>
           <TabsTrigger value="catalog">Все продукты ({allProducts.length})</TabsTrigger>
@@ -451,7 +451,7 @@ const Admin = () => {
         </TabsList>
 
         <TabsContent value="users" className="space-y-4 mt-4">
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 {renderIcon("solar:magnifer-bold-duotone", { className: "text-[18px]" })}
@@ -459,7 +459,7 @@ const Admin = () => {
               <Input placeholder="Поиск..." className="pl-10" value={searchUsers} onChange={(e) => setSearchUsers(e.target.value)} />
             </div>
             <Select value={titleFilter} onValueChange={setTitleFilter}>
-              <SelectTrigger className="w-40"><SelectValue placeholder="Фильтр" /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Фильтр" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Все титулы</SelectItem>
                 {["Новичок", "Любитель", "Спортсмен", "Профи", "Эксперт", "Легенда", "Абсолютный чемпион"].map(t => (
@@ -471,7 +471,7 @@ const Admin = () => {
           <div className="space-y-2">
             {filteredUsers.map((u) => (
               <Card key={u.user_id} className={`card-hover ${(u as any).is_blocked ? "opacity-60" : ""}`}>
-                <CardContent className="p-4 flex items-center gap-4">
+                <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback className="text-xs bg-primary/10 text-primary">
                       {u.display_name?.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
@@ -484,51 +484,53 @@ const Admin = () => {
                     </div>
                     <p className="text-xs text-muted-foreground">{u.xp} XP • {u.total_days} дн. • {u.streak_days}🔥</p>
                   </div>
-                  <Select defaultValue={u.title} onValueChange={(v) => updateTitle(u.user_id, v)}>
-                    <SelectTrigger className="w-32 h-8 text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {["Новичок", "Любитель", "Спортсмен", "Профи", "Эксперт", "Легенда", "Абсолютный чемпион"].map(t => (
-                        <SelectItem key={t} value={t}>{t}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    variant={(u as any).is_blocked ? "secondary" : "destructive"}
-                    size="sm"
-                    className="text-xs"
-                    onClick={() => toggleBlock(u.user_id, (u as any).is_blocked)}
-                  >
-                    {(u as any).is_blocked
-                      ? <span className="mr-1">{renderIcon("solar:check-circle-bold-duotone", { className: "text-[14px]" })}</span>
-                      : <span className="mr-1">{renderIcon("solar:ban-bold-duotone", { className: "text-[14px]" })}</span>}
-                    {(u as any).is_blocked ? "Разблок." : "Блок."}
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                    <Select defaultValue={u.title} onValueChange={(v) => updateTitle(u.user_id, v)}>
+                      <SelectTrigger className="w-36 h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {["Новичок", "Любитель", "Спортсмен", "Профи", "Эксперт", "Легенда", "Абсолютный чемпион"].map(t => (
+                          <SelectItem key={t} value={t}>{t}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant={(u as any).is_blocked ? "secondary" : "destructive"}
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => toggleBlock(u.user_id, (u as any).is_blocked)}
+                    >
+                      {(u as any).is_blocked
+                        ? <span className="mr-1">{renderIcon("solar:check-circle-bold-duotone", { className: "text-[14px]" })}</span>
+                        : <span className="mr-1">{renderIcon("solar:ban-bold-duotone", { className: "text-[14px]" })}</span>}
+                      {(u as any).is_blocked ? "Разблок." : "Блок."}
+                    </Button>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs"
-                    onClick={() => {
-                      setSetXpUserId(String(u.user_id));
-                      setSetXpValue(String(u.xp ?? 0));
-                      setSetXpDialogOpen(true);
-                    }}
-                  >
-                    XP
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => {
+                        setSetXpUserId(String(u.user_id));
+                        setSetXpValue(String(u.xp ?? 0));
+                        setSetXpDialogOpen(true);
+                      }}
+                    >
+                      XP
+                    </Button>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs"
-                    onClick={() => {
-                      setGrantUserId(String(u.user_id));
-                      setGrantAchievementId("");
-                      setGrantDialogOpen(true);
-                    }}
-                  >
-                    Выдать
-                  </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => {
+                        setGrantUserId(String(u.user_id));
+                        setGrantAchievementId("");
+                        setGrantDialogOpen(true);
+                      }}
+                    >
+                      Выдать
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -539,12 +541,12 @@ const Admin = () => {
           {pendingProducts.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">Нет продуктов на модерации</p>}
           {pendingProducts.map((p) => (
             <Card key={p.id} className="card-hover">
-              <CardContent className="p-4 flex items-center gap-4">
+              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex-1">
                   <p className="font-medium text-sm">{p.name}</p>
                   <p className="text-xs text-muted-foreground">{p.calories_per_100g} ккал • Б{p.protein_per_100g} Ж{p.fat_per_100g} У{p.carbs_per_100g}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 sm:justify-end">
                   <Button variant="hero" size="sm" className="text-xs" onClick={() => approveProduct(p.id)}>Одобрить</Button>
                   <Button variant="destructive" size="sm" className="text-xs" onClick={() => rejectProduct(p.id)}>Отклонить</Button>
                 </div>
@@ -554,7 +556,7 @@ const Admin = () => {
         </TabsContent>
 
         <TabsContent value="catalog" className="space-y-4 mt-4">
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 {renderIcon("solar:magnifer-bold-duotone", { className: "text-[18px]" })}
@@ -574,7 +576,7 @@ const Admin = () => {
               .slice(0, 200)
               .map((p) => (
                 <Card key={p.id} className="card-hover">
-                  <CardContent className="p-4 flex items-center gap-4">
+                  <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm">{p.name}</p>
@@ -596,7 +598,7 @@ const Admin = () => {
         </TabsContent>
 
         <TabsContent value="achievements" className="space-y-4 mt-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h3 className="font-display font-semibold">Все достижения ({achievements.length})</h3>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={seedAchievements}>
@@ -609,12 +611,12 @@ const Admin = () => {
               <DialogContent>
                 <DialogHeader><DialogTitle>Новое достижение</DialogTitle></DialogHeader>
                 <div className="space-y-3">
-                  <div className="grid grid-cols-4 gap-3">
-                    <div className="space-y-2 col-span-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div className="space-y-2 sm:col-span-1">
                       <Label>Иконка</Label>
                       <Input value={newAch.icon} onChange={(e) => setNewAch({...newAch, icon: e.target.value})} />
                     </div>
-                    <div className="space-y-2 col-span-3">
+                    <div className="space-y-2 sm:col-span-3">
                       <Label>Название</Label>
                       <Input value={newAch.name} onChange={(e) => setNewAch({...newAch, name: e.target.value})} />
                     </div>
@@ -627,7 +629,7 @@ const Admin = () => {
                     <Label>Описание</Label>
                     <Input value={newAch.description} onChange={(e) => setNewAch({...newAch, description: e.target.value})} />
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="space-y-2">
                       <Label>Тип</Label>
                       <Select value={newAch.condition_type} onValueChange={(v) => setNewAch({...newAch, condition_type: v})}>
