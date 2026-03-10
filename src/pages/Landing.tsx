@@ -205,14 +205,30 @@ const Landing = () => {
 
       await setDoc(doc(db, "user_roles", uid), { user_id: uid, role: "user" }, { merge: true });
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Ошибка регистрации", description: e?.message ?? "Ошибка регистрации" });
+      const code = String(e?.code ?? "");
+      let hint: string | null = null;
+
+      if (code.includes("unauthorized-domain")) {
+        hint = "Домен не разрешён в Firebase Auth (Authorized domains).";
+      } else if (code.includes("operation-not-allowed")) {
+        hint = "Метод Email/Password выключен в Firebase Auth.";
+      } else if (code.includes("network-request-failed")) {
+        hint = "Похоже на сетевую ошибку (на мобилке часто блокируется VPN/AdBlock/нестабильная сеть).";
+      }
+
+      console.error("register_failed", { code, message: e?.message, error: e });
+      toast({
+        variant: "destructive",
+        title: "Ошибка регистрации",
+        description: `${code ? `[${code}] ` : ""}${e?.message ?? "Ошибка регистрации"}${hint ? `\n${hint}` : ""}`,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden page-shell">
+    <div className="relative min-h-screen overflow-x-hidden page-shell">
       <div className="absolute inset-0 overflow-hidden">
         <div className="wave-bg absolute -bottom-24 -left-24 w-[160%] h-[62%] rounded-[40%] bg-primary/10" />
         <div className="wave-bg-slow absolute -bottom-48 -right-24 w-[160%] h-[52%] rounded-[45%] bg-primary/5" />
@@ -223,7 +239,7 @@ const Landing = () => {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55 }}
-        className="relative z-10 mx-auto w-full max-w-6xl px-4 py-10 sm:py-14"
+        className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-8 pb-24 sm:py-14"
       >
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
           <div className="text-center lg:text-left">
@@ -400,7 +416,7 @@ const Landing = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="space-y-2">
                         <Label>Возраст</Label>
                         <Input type="number" value={regAge} onChange={(e) => setRegAge(e.target.value)} />

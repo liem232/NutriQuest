@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 type Props = {
   eyebrow?: string;
@@ -9,6 +9,8 @@ type Props = {
 };
 
 export function PageBanner({ eyebrow, title, description, icon, right }: Props) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -34,16 +36,19 @@ export function PageBanner({ eyebrow, title, description, icon, right }: Props) 
           mixBlendMode: "overlay",
         }}
       />
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute -left-1/2 top-0 h-full w-[180%] opacity-25"
-        animate={{ x: ["-20%", "20%", "-20%"] }}
-        transition={{ duration: 5.5, repeat: Infinity }}
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, hsl(38 92% 55% / 0.22), transparent)",
-        }}
-      />
+      {!reduceMotion ? (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute -left-1/2 top-0 h-full w-[180%] opacity-25"
+          animate={{ x: ["-20%", "20%", "-20%"] }}
+          transition={{ duration: 5.5, repeat: Infinity }}
+          style={{
+            background:
+              "linear-gradient(90deg, transparent, hsl(38 92% 55% / 0.22), transparent)",
+            willChange: "transform",
+          }}
+        />
+      ) : null}
       <div className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="min-w-0">
           {eyebrow && <p className="text-xs text-muted-foreground">{eyebrow}</p>}

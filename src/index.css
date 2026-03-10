@@ -237,4 +237,12 @@
   .wave-bg-slow {
     animation: wave 20s ease-in-out infinite reverse;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wave-bg,
+    .wave-bg-slow,
+    .achievement-unlocked::after {
+      animation: none !important;
+    }
+  }
 }
