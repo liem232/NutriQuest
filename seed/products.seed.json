@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "categories": [
+    { "id": "meat", "name": "Мясо", "icon": "🥩", "sort_order": 10 },
+    { "id": "fish", "name": "Рыба и морепродукты", "icon": "🐟", "sort_order": 20 },
+    { "id": "dairy", "name": "Молочные", "icon": "🥛", "sort_order": 30 },
+    { "id": "eggs", "name": "Яйца", "icon": "🥚", "sort_order": 40 },
+    { "id": "grains", "name": "Крупы и каши", "icon": "🌾", "sort_order": 50 },
+    { "id": "bread", "name": "Хлеб и выпечка", "icon": "🥖", "sort_order": 60 },
+    { "id": "vegetables", "name": "Овощи", "icon": "🥦", "sort_order": 70 },
+    { "id": "fruits", "name": "Фрукты", "icon": "🍎", "sort_order": 80 },
+    { "id": "nuts", "name": "Орехи и семена", "icon": "🥜", "sort_order": 90 },
+    { "id": "oils", "name": "Масла и жиры", "icon": "🫒", "sort_order": 100 },
+    { "id": "sweets", "name": "Сладкое", "icon": "🍫", "sort_order": 110 },
+    { "id": "drinks", "name": "Напитки", "icon": "🥤", "sort_order": 120 }
+  ],
+  "products": [
+    { "name": "Куриная грудка", "category_id": "meat", "calories_per_100g": 165, "protein_per_100g": 31.0, "fat_per_100g": 3.6, "carbs_per_100g": 0.0 },
+    { "name": "Куриное бедро (без кожи)", "category_id": "meat", "calories_per_100g": 177, "protein_per_100g": 24.0, "fat_per_100g": 8.0, "carbs_per_100g": 0.0 },
+    { "name": "Индейка филе", "category_id": "meat", "calories_per_100g": 135, "protein_per_100g": 29.0, "fat_per_100g": 1.0, "carbs_per_100g": 0.0 },
+    { "name": "Говядина постная", "category_id": "meat", "calories_per_100g": 187, "protein_per_100g": 26.0, "fat_per_100g": 9.0, "carbs_per_100g": 0.0 },
+    { "name": "Свинина вырезка", "category_id": "meat", "calories_per_100g": 143, "protein_per_100g": 26.0, "fat_per_100g": 3.5, "carbs_per_100g": 0.0 },
+    { "name": "Тунец (консервы, в собственном соку)", "category_id": "fish", "calories_per_100g": 116, "protein_per_100g": 26.0, "fat_per_100g": 1.0, "carbs_per_100g": 0.0 },
+    { "name": "Лосось", "category_id": "fish", "calories_per_100g": 208, "protein_per_100g": 20.0, "fat_per_100g": 13.0, "carbs_per_100g": 0.0 },
+    { "name": "Треска", "category_id": "fish", "calories_per_100g": 82, "protein_per_100g": 18.0, "fat_per_100g": 0.7, "carbs_per_100g": 0.0 },
+    { "name": "Креветки", "category_id": "fish", "calories_per_100g": 99, "protein_per_100g": 24.0, "fat_per_100g": 0.3, "carbs_per_100g": 0.2 },
+
+    { "name": "Молоко 2.5%", "category_id": "dairy", "calories_per_100g": 52, "protein_per_100g": 3.0, "fat_per_100g": 2.5, "carbs_per_100g": 4.8 },
+    { "name": "Кефир 2.5%", "category_id": "dairy", "calories_per_100g": 53, "protein_per_100g": 3.0, "fat_per_100g": 2.5, "carbs_per_100g": 4.0 },
+    { "name": "Йогурт натуральный", "category_id": "dairy", "calories_per_100g": 59, "protein_per_100g": 10.0, "fat_per_100g": 0.4, "carbs_per_100g": 3.6 },
+    { "name": "Творог 5%", "category_id": "dairy", "calories_per_100g": 121, "protein_per_100g": 17.0, "fat_per_100g": 5.0, "carbs_per_100g": 3.0 },
+    { "name": "Сыр твёрдый", "category_id": "dairy", "calories_per_100g": 350, "protein_per_100g": 25.0, "fat_per_100g": 27.0, "carbs_per_100g": 1.3 },
+
+    { "name": "Яйцо куриное", "category_id": "eggs", "calories_per_100g": 143, "protein_per_100g": 12.6, "fat_per_100g": 9.5, "carbs_per_100g": 0.7 },
+
+    { "name": "Овсянка (сухая)", "category_id": "grains", "calories_per_100g": 367, "protein_per_100g": 13.5, "fat_per_100g": 6.5, "carbs_per_100g": 61.0 },
+    { "name": "Гречка (сухая)", "category_id": "grains", "calories_per_100g": 343, "protein_per_100g": 13.0, "fat_per_100g": 3.4, "carbs_per_100g": 71.5 },
+    { "name": "Рис белый (сухой)", "category_id": "grains", "calories_per_100g": 365, "protein_per_100g": 7.1, "fat_per_100g": 0.7, "carbs_per_100g": 80.0 },
+    { "name": "Рис бурый (сухой)", "category_id": "grains", "calories_per_100g": 370, "protein_per_100g": 7.5, "fat_per_100g": 2.7, "carbs_per_100g": 76.0 },
+    { "name": "Макароны (сухие)", "category_id": "grains", "calories_per_100g": 371, "protein_per_100g": 13.0, "fat_per_100g": 1.5, "carbs_per_100g": 74.0 },
+
+    { "name": "Хлеб цельнозерновой", "category_id": "bread", "calories_per_100g": 247, "protein_per_100g": 8.7, "fat_per_100g": 4.2, "carbs_per_100g": 41.0 },
+
+    { "name": "Огурец", "category_id": "vegetables", "calories_per_100g": 15, "protein_per_100g": 0.7, "fat_per_100g": 0.1, "carbs_per_100g": 3.6 },
+    { "name": "Помидор", "category_id": "vegetables", "calories_per_100g": 18, "protein_per_100g": 0.9, "fat_per_100g": 0.2, "carbs_per_100g": 3.9 },
+    { "name": "Брокколи", "category_id": "vegetables", "calories_per_100g": 34, "protein_per_100g": 2.8, "fat_per_100g": 0.4, "carbs_per_100g": 6.6 },
+    { "name": "Картофель", "category_id": "vegetables", "calories_per_100g": 77, "protein_per_100g": 2.0, "fat_per_100g": 0.1, "carbs_per_100g": 17.0 },
+    { "name": "Морковь", "category_id": "vegetables", "calories_per_100g": 41, "protein_per_100g": 0.9, "fat_per_100g": 0.2, "carbs_per_100g": 10.0 },
+
+    { "name": "Яблоко", "category_id": "fruits", "calories_per_100g": 52, "protein_per_100g": 0.3, "fat_per_100g": 0.2, "carbs_per_100g": 14.0 },
+    { "name": "Банан", "category_id": "fruits", "calories_per_100g": 89, "protein_per_100g": 1.1, "fat_per_100g": 0.3, "carbs_per_100g": 22.8 },
+    { "name": "Апельсин", "category_id": "fruits", "calories_per_100g": 47, "protein_per_100g": 0.9, "fat_per_100g": 0.1, "carbs_per_100g": 12.0 },
+
+    { "name": "Миндаль", "category_id": "nuts", "calories_per_100g": 579, "protein_per_100g": 21.0, "fat_per_100g": 50.0, "carbs_per_100g": 22.0 },
+    { "name": "Грецкий орех", "category_id": "nuts", "calories_per_100g": 654, "protein_per_100g": 15.0, "fat_per_100g": 65.0, "carbs_per_100g": 14.0 },
+
+    { "name": "Оливковое масло", "category_id": "oils", "calories_per_100g": 884, "protein_per_100g": 0.0, "fat_per_100g": 100.0, "carbs_per_100g": 0.0 },
+    { "name": "Сливочное масло", "category_id": "oils", "calories_per_100g": 717, "protein_per_100g": 0.9, "fat_per_100g": 81.0, "carbs_per_100g": 0.1 },
+
+    { "name": "Шоколад тёмный", "category_id": "sweets", "calories_per_100g": 546, "protein_per_100g": 4.9, "fat_per_100g": 31.0, "carbs_per_100g": 61.0 },
+    { "name": "Мёд", "category_id": "sweets", "calories_per_100g": 304, "protein_per_100g": 0.3, "fat_per_100g": 0.0, "carbs_per_100g": 82.0 },
+
+    { "name": "Вода", "category_id": "drinks", "calories_per_100g": 0, "protein_per_100g": 0.0, "fat_per_100g": 0.0, "carbs_per_100g": 0.0 },
+    { "name": "Кофе без сахара", "category_id": "drinks", "calories_per_100g": 1, "protein_per_100g": 0.1, "fat_per_100g": 0.0, "carbs_per_100g": 0.0 },
+    { "name": "Чай без сахара", "category_id": "drinks", "calories_per_100g": 1, "protein_per_100g": 0.0, "fat_per_100g": 0.0, "carbs_per_100g": 0.2 }
+  ]
+}

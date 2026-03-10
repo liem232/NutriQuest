@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "achievements": [
+    { "id": "first_day", "name": "Первый шаг", "description": "Заполни дневник впервые", "icon": "👣", "condition_type": "total_days", "condition_value": 1, "xp_reward": 30 },
+    { "id": "streak_7", "name": "Неделя в деле", "description": "7 дней подряд", "icon": "🔥", "condition_type": "streak", "condition_value": 7, "xp_reward": 150 },
+    { "id": "streak_14", "name": "Две недели", "description": "14 дней подряд", "icon": "⚡", "condition_type": "streak", "condition_value": 14, "xp_reward": 300 },
+    { "id": "streak_30", "name": "Месяц дисциплины", "description": "30 дней подряд", "icon": "🏅", "condition_type": "streak", "condition_value": 30, "xp_reward": 800 },
+    { "id": "total_30", "name": "Календарь привычки", "description": "30 дней всего", "icon": "🗓️", "condition_type": "total_days", "condition_value": 30, "xp_reward": 500 },
+    { "id": "total_100", "name": "Сотка", "description": "100 дней всего", "icon": "💯", "condition_type": "total_days", "condition_value": 100, "xp_reward": 1200 },
+    { "id": "total_365", "name": "Легендарный год", "description": "365 дней всего", "icon": "🏆", "condition_type": "total_days", "condition_value": 365, "xp_reward": 5000 },
+
+    { "id": "products_added_10", "name": "Коллекционер", "description": "Добавь 10 записей в дневник", "icon": "🧺", "condition_type": "products_added", "condition_value": 10, "xp_reward": 120 },
+    { "id": "products_added_50", "name": "Шеф-повар", "description": "Добавь 50 записей в дневник", "icon": "👨‍🍳", "condition_type": "products_added", "condition_value": 50, "xp_reward": 450 },
+    { "id": "products_added_200", "name": "Лаборатория вкуса", "description": "Добавь 200 записей в дневник", "icon": "🧪", "condition_type": "products_added", "condition_value": 200, "xp_reward": 1200 }
+  ]
+}

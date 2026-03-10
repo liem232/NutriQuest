@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 40% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 40% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 40% 10%;
+
+    --primary: 162 72% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 22% 93%;
+    --secondary-foreground: 222 40% 10%;
+
+    --muted: 215 25% 95%;
+    --muted-foreground: 215 16% 44%;
+
+    --accent: 38 92% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 74% 54%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 22% 90%;
+    --input: 214 22% 90%;
+    --ring: 162 72% 42%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 40% 10%;
+    --sidebar-primary: 162 72% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+
+    --sidebar-accent: 215 25% 96%;
+    --sidebar-accent-foreground: 222 40% 10%;
+    --sidebar-border: 214 22% 90%;
+    --sidebar-ring: 162 72% 48%;
+
+    /* Custom tokens */
+    --gold: 38 92% 55%;
+    --gold-foreground: 38 92% 20%;
+    --emerald: 162 72% 42%;
+    --emerald-light: 162 55% 92%;
+    --navy: 222 40% 10%;
+    --chart-protein: 210 80% 55%;
+    --chart-fat: 38 92% 55%;
+    --chart-carbs: 154 70% 45%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(162 72% 42%), hsl(178 65% 44%));
+    --gradient-gold: linear-gradient(135deg, hsl(38 92% 55%), hsl(28 88% 52%));
+    --gradient-hero: radial-gradient(1200px 600px at 10% 0%, hsl(162 72% 42% / 0.16), transparent 60%),
+      radial-gradient(900px 520px at 92% 12%, hsl(38 92% 55% / 0.12), transparent 58%),
+      radial-gradient(900px 540px at 50% 120%, hsl(210 60% 55% / 0.10), transparent 60%);
+    --shadow-elevated: 0 26px 70px hsl(222 40% 10% / 0.14);
+    --shadow-soft: 0 14px 34px hsl(222 40% 10% / 0.10);
+  }
+
+  .dark {
+    --background: 222 30% 8%;
+    --foreground: 210 40% 95%;
+
+    --card: 222 25% 12%;
+    --card-foreground: 210 40% 95%;
+
+    --popover: 222 25% 12%;
+    --popover-foreground: 210 40% 95%;
+
+    --primary: 162 72% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 222 20% 18%;
+    --secondary-foreground: 210 40% 95%;
+
+    --muted: 222 20% 16%;
+    --muted-foreground: 215 20% 60%;
+
+    --accent: 38 92% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 222 20% 18%;
+    --input: 222 20% 18%;
+    --ring: 162 72% 48%;
+
+    --sidebar-background: 222 30% 6%;
+    --sidebar-foreground: 210 40% 95%;
+    --sidebar-primary: 162 72% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 20% 14%;
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 222 20% 18%;
+    --sidebar-ring: 162 72% 48%;
+
+    --emerald-light: 162 40% 18%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg;
+  }
+
+  .page-shell {
+    @apply relative;
+    background: var(--gradient-hero);
+  }
+
+  .glass-surface {
+    @apply bg-card/70 backdrop-blur-xl border border-border/60;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-gold {
+    background: var(--gradient-gold);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 30px hsl(38 92% 55% / 0.3);
+  }
+
+  .glow-emerald {
+    box-shadow: 0 0 30px hsl(154 70% 45% / 0.2);
+  }
+
+  .achievement-locked {
+    @apply grayscale opacity-50 blur-[1px];
+  }
+
+  .achievement-unlocked {
+    @apply relative;
+  }
+
+  .achievement-unlocked::after {
+    content: '';
+    @apply absolute inset-0 rounded-xl;
+    background: linear-gradient(135deg, transparent 40%, hsl(38 92% 55% / 0.15) 50%, transparent 60%);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    25% { transform: translateX(-5%) translateY(3%); }
+    50% { transform: translateX(-10%) translateY(0); }
+    75% { transform: translateX(-5%) translateY(-3%); }
+  }
+
+  .wave-bg {
+    animation: wave 15s ease-in-out infinite;
+  }
+
+  .wave-bg-slow {
+    animation: wave 20s ease-in-out infinite reverse;
+  }
+}
