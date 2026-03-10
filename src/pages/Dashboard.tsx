@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Flame, TrendingUp, Star, ChevronRight, Zap, Trophy, Search } from "lucide-react";
+import { renderIcon } from "@/lib/icons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/carousel";
 
 const anim = {
-  container: { hidden: {}, show: { transition: { staggerChildren: 0.04 } } },
+  container: { hidden: {}, show: { transition: { staggerChildren: 0.035 } } },
   item: { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } },
 };
 
@@ -283,7 +283,7 @@ const Dashboard = () => {
       meta: `${pct}% от нормы`,
       accent: "from-emerald-500/18 via-sky-500/10 to-transparent",
       href: "/diary",
-      icon: <Flame className="h-5 w-5 text-foreground" />,
+      icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-foreground" }),
     },
     {
       title: "Серия дней",
@@ -291,7 +291,7 @@ const Dashboard = () => {
       meta: "Не сбивай темп", 
       accent: "from-amber-500/18 via-emerald-500/10 to-transparent",
       href: "/achievements",
-      icon: <Zap className="h-5 w-5 text-foreground" />,
+      icon: renderIcon("solar:bolt-bold-duotone", { className: "text-[20px] text-foreground" }),
     },
     {
       title: "Титул",
@@ -299,7 +299,7 @@ const Dashboard = () => {
       meta: `${profile.xp} XP`,
       accent: "from-violet-500/18 via-amber-500/10 to-transparent",
       href: "/achievements",
-      icon: <Trophy className="h-5 w-5 text-foreground" />,
+      icon: renderIcon("solar:cup-star-bold-duotone", { className: "text-[20px] text-foreground" }),
     },
     {
       title: "Каталог",
@@ -307,7 +307,7 @@ const Dashboard = () => {
       meta: "Или добавь свой", 
       accent: "from-sky-500/18 via-emerald-500/10 to-transparent",
       href: "/products",
-      icon: <Search className="h-5 w-5 text-foreground" />,
+      icon: renderIcon("solar:magnifer-bold-duotone", { className: "text-[20px] text-foreground" }),
     },
   ];
 
@@ -319,7 +319,7 @@ const Dashboard = () => {
       desc: "Собери тарелку: 1/2 овощи, 1/4 белок, 1/4 сложные углеводы.",
       details:
         "Быстрый ориентир без подсчётов: овощи дают объём и сытость, белок поддерживает мышцы, сложные углеводы — энергию. Добавь 1–2 ч.л. жиров (оливковое масло/орехи), чтобы вкус и насыщение были лучше.",
-      icon: "🥗",
+      icon: "mdi:bowl-mix-outline",
     },
     {
       title: "Белок — равномерно",
@@ -328,7 +328,7 @@ const Dashboard = () => {
       desc: "Раздели белок на 3–4 приёма — так легче добирать норму.",
       details:
         "Практика: добавь белковый якорь к каждому приёму пищи (йогурт/творог, яйца, курица/рыба, бобовые). Это снижает тягу к сладкому и помогает восстановлению.",
-      icon: "🍗",
+      icon: "mdi:food-drumstick-outline",
     },
     {
       title: "Сладкое без откатов",
@@ -337,7 +337,7 @@ const Dashboard = () => {
       desc: "Если хочется сладкого — сначала белок/клетчатка, потом десерт.",
       details:
         "Лайфхак: десерт после основного приёма пищи обычно даёт меньший скачок сахара. Альтернатива: фрукт + йогурт/творог.",
-      icon: "🍫",
+      icon: "mdi:candy-outline",
     },
     {
       title: "Шаги после еды",
@@ -346,7 +346,7 @@ const Dashboard = () => {
       desc: "10 минут прогулки после еды — простая «суперсила».",
       details:
         "Не нужно кардио: лёгкая ходьба помогает пищеварению и управлению энергией. Особенно полезно после плотного ужина.",
-      icon: "🚶‍♂️",
+      icon: "mdi:walk",
     },
   ];
 
@@ -357,7 +357,7 @@ const Dashboard = () => {
           <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight">Привет, {profile.display_name}! 👋</h1>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-sm bg-accent/20 text-accent px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-              <Star className="h-3 w-3" />
+              {renderIcon("solar:star-bold-duotone", { className: "text-[14px]" })}
               <span
                 className={titleThemeValue.titleClass}
                 style={{ filter: `drop-shadow(0 0 10px ${titleThemeValue.glow})` }}
@@ -381,7 +381,7 @@ const Dashboard = () => {
           eyebrow="Сегодня"
           title="Фокус дня"
           description="Доведи день до красивого результата: следи за нормой и сохрани streak. Всё под рукой."
-          icon={<Flame className="h-5 w-5 text-primary-foreground" />}
+          icon={renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
         />
       </motion.div>
 
@@ -449,7 +449,7 @@ const Dashboard = () => {
                             <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{t.desc}</p>
                           </div>
                           <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
-                            <span className="text-lg">{t.icon}</span>
+                            {renderIcon(t.icon, { className: "text-lg" })}
                           </div>
                         </div>
                         <div className="mt-4">
@@ -473,7 +473,7 @@ const Dashboard = () => {
           <Card className="card-hover">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Flame className="h-5 w-5 text-primary" /> Сегодня
+                {renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-primary" })} Сегодня
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -526,7 +526,7 @@ const Dashboard = () => {
         <Card className="card-hover">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center justify-between text-lg">
-              <span className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-primary" /> Неделя</span>
+              <span className="flex items-center gap-2">{renderIcon("solar:graph-up-bold-duotone", { className: "text-[20px] text-primary" })} Неделя</span>
               <span className="text-sm text-muted-foreground">Средний: {weekAvg}%</span>
             </CardTitle>
           </CardHeader>
@@ -568,7 +568,9 @@ const Dashboard = () => {
             {recommendations.map((r, i) => (
               <Card key={i} className="card-hover min-w-[200px] cursor-pointer shrink-0" onClick={() => setSelectedRec(r)}>
                 <CardContent className="p-4">
-                  <span className="text-2xl">{r.icon}</span>
+                  <div className="h-9 w-9 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center">
+                    {renderIcon(r.icon, { className: "text-2xl" })}
+                  </div>
                   <p className="font-medium mt-2 text-sm">{r.title}</p>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{r.desc}</p>
                 </CardContent>
@@ -583,7 +585,7 @@ const Dashboard = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <span className="text-2xl">{selectedRec?.icon}</span> {selectedRec?.title}
+              {renderIcon(selectedRec?.icon, { className: "text-2xl" })} {selectedRec?.title}
             </DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">{selectedRec?.desc}</p>
@@ -599,10 +601,10 @@ const Dashboard = () => {
       </Dialog>
 
       <Dialog open={!!selectedTip} onOpenChange={() => setSelectedTip(null)}>
-        <DialogContent className="left-0 right-0 top-auto bottom-24 md:bottom-8 translate-x-0 translate-y-0 mx-auto w-[calc(100%-1.5rem)] max-w-md rounded-2xl p-5 data-[state=closed]:slide-out-to-bottom-6 data-[state=open]:slide-in-from-bottom-6">
+        <DialogContent className="w-[calc(100%-1.5rem)] max-w-md rounded-2xl p-5">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <span className="text-2xl">{selectedTip?.icon}</span> {selectedTip?.title}
+              {renderIcon(selectedTip?.icon, { className: "text-2xl" })} {selectedTip?.title}
             </DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">{selectedTip?.details}</p>
@@ -622,7 +624,7 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-display font-semibold">Последние достижения</h2>
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/achievements">Все <ChevronRight className="h-4 w-4 ml-1" /></Link>
+            <Link to="/achievements">Все <span className="ml-1">{renderIcon("solar:alt-arrow-right-bold-duotone", { className: "text-[18px]" })}</span></Link>
           </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -632,9 +634,21 @@ const Dashboard = () => {
             recentAchievements.map((a) => (
               <Card key={a.id} className="card-hover">
                 <CardContent className="p-4 flex items-center gap-3">
-                  <span className="text-3xl">{a.achievement?.image_url ? "🖼️" : (a.achievement?.icon ?? "🏆")}</span>
-                  <div>
-                    <p className="font-medium text-sm">{a.achievement?.name ?? "Достижение"}</p>
+                  {a.achievement?.image_url ? (
+                    <img
+                      src={String(a.achievement.image_url)}
+                      alt={String(a.achievement?.name ?? "Achievement")}
+                      className="h-10 w-10 rounded-xl object-cover border border-border/60"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="text-3xl">{renderIcon(a.achievement?.icon ?? "mdi:trophy-outline", { className: "text-[26px]" })}</div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium truncate">{a.achievement?.name ?? "Достижение"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      +{a.achievement?.xp_reward ?? 0} XP
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {typeof a.earned_at?.toDate === "function"
                         ? a.earned_at.toDate().toLocaleDateString("ru")
@@ -653,7 +667,7 @@ const Dashboard = () => {
           <div className="glass-surface elevated border border-border/60 rounded-2xl p-3">
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-primary" />
+                {renderIcon("solar:graph-up-bold-duotone", { className: "text-[20px] text-primary" })}
               </div>
 
               <div className="min-w-0 flex-1">

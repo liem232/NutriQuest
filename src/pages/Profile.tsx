@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Calendar, Flame, ChevronRight, LogOut, Zap, User as UserIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +13,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { collection, doc, getCountFromServer, query, updateDoc, where } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
 import { calculateDailyCalories } from "@/lib/calculateDailyCalories";
+import { renderIcon } from "@/lib/icons";
 
 const activityLabels: Record<string, string> = {
   sedentary: "Сидячий образ жизни",
@@ -117,7 +117,7 @@ const Profile = () => {
             <p className="mt-2 text-sm text-muted-foreground">Обновляй данные — нормы пересчитаются автоматически.</p>
           </div>
           <div className="h-11 w-11 rounded-2xl gradient-primary flex items-center justify-center shrink-0">
-            <UserIcon className="h-5 w-5 text-primary-foreground" />
+            {renderIcon("solar:user-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
           </div>
         </div>
       </div>
@@ -137,10 +137,10 @@ const Profile = () => {
       <Carousel opts={{ align: "start" }} className="relative">
         <CarouselContent>
           {[
-            { icon: <Flame className="h-5 w-5 text-primary" />, value: profile.streak_days.toString(), label: "Дней подряд" },
-            { icon: <Zap className="h-5 w-5 text-accent" />, value: ((profile as any).best_streak ?? 0).toString(), label: "Лучшая серия" },
-            { icon: <Calendar className="h-5 w-5 text-primary" />, value: profile.total_days.toString(), label: "Всего дней" },
-            { icon: <Trophy className="h-5 w-5 text-accent" />, value: achievementCount.toString(), label: "Достижений" },
+            { icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-primary" }), value: profile.streak_days.toString(), label: "Дней подряд" },
+            { icon: renderIcon("solar:bolt-bold-duotone", { className: "text-[20px] text-accent" }), value: ((profile as any).best_streak ?? 0).toString(), label: "Лучшая серия" },
+            { icon: renderIcon("solar:calendar-bold-duotone", { className: "text-[20px] text-primary" }), value: profile.total_days.toString(), label: "Всего дней" },
+            { icon: renderIcon("solar:cup-star-bold-duotone", { className: "text-[20px] text-accent" }), value: achievementCount.toString(), label: "Достижений" },
           ].map((s, i) => (
             <CarouselItem key={i} className="basis-1/2 sm:basis-1/3">
               <Card className="card-hover">
@@ -231,11 +231,15 @@ const Profile = () => {
       </Button>
 
       <Button variant="gold" className="w-full" asChild>
-        <Link to="/achievements"><Trophy className="h-4 w-4 mr-2" /> Соревноваться <ChevronRight className="h-4 w-4 ml-auto" /></Link>
+        <Link to="/achievements">
+          <span className="mr-2">{renderIcon("solar:cup-star-bold-duotone", { className: "text-[18px]" })}</span>
+          Соревноваться
+          <span className="ml-auto">{renderIcon("solar:alt-arrow-right-bold-duotone", { className: "text-[18px]" })}</span>
+        </Link>
       </Button>
 
       <Button variant="outline" className="w-full text-destructive" onClick={handleLogout}>
-        <LogOut className="h-4 w-4 mr-2" /> Выйти
+        <span className="mr-2">{renderIcon("solar:logout-3-bold-duotone", { className: "text-[18px]" })}</span> Выйти
       </Button>
     </motion.div>
   );

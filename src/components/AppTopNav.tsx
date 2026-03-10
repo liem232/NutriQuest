@@ -1,16 +1,16 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Search, Trophy, User, Shield, LogOut } from "lucide-react";
+import { renderIcon } from "@/lib/icons";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
-  { to: "/dashboard", label: "Дашборд", icon: LayoutDashboard },
-  { to: "/diary", label: "Дневник", icon: BookOpen },
-  { to: "/products", label: "Продукты", icon: Search },
-  { to: "/achievements", label: "Достижения", icon: Trophy },
-  { to: "/profile", label: "Профиль", icon: User },
+  { to: "/dashboard", label: "Дашборд", icon: "solar:home-2-bold-duotone" },
+  { to: "/diary", label: "Дневник", icon: "solar:notebook-bold-duotone" },
+  { to: "/products", label: "Продукты", icon: "solar:magnifer-bold-duotone" },
+  { to: "/achievements", label: "Достижения", icon: "solar:cup-star-bold-duotone" },
+  { to: "/profile", label: "Профиль", icon: "solar:user-bold-duotone" },
 ] as const;
 
 export function AppTopNav() {
@@ -23,11 +23,16 @@ export function AppTopNav() {
         <div className="h-14 flex items-center gap-2">
           <NavLink to="/dashboard" className="flex items-center gap-2 min-w-0">
             <div className="h-9 w-9 rounded-2xl gradient-primary flex items-center justify-center shrink-0">
-              <span className="sr-only">NutriQuest</span>
+              <img
+                src="/favicon.svg"
+                alt="NutriQuest"
+                className="h-6 w-6"
+                draggable={false}
+              />
             </div>
-            <div className="hidden sm:block min-w-0">
-              <p className="text-sm font-display font-semibold leading-none">NutriQuest</p>
-              <p className="text-xs text-muted-foreground mt-1 leading-none">Трекер питания</p>
+            <div className="min-w-0">
+              <p className="text-sm font-display font-semibold leading-none truncate">NutriQuest</p>
+              <p className="hidden sm:block text-xs text-muted-foreground mt-1 leading-none truncate">Трекер питания</p>
             </div>
           </NavLink>
 
@@ -43,7 +48,7 @@ export function AppTopNav() {
                     : "text-muted-foreground hover:bg-card/60 hover:text-foreground")
                 }
               >
-                <item.icon className="h-4 w-4" />
+                {renderIcon(item.icon, { className: "text-[18px]" })}
                 <span className="font-medium">{item.label}</span>
               </NavLink>
             ))}
@@ -58,7 +63,7 @@ export function AppTopNav() {
                     : "text-muted-foreground hover:bg-card/60 hover:text-foreground")
                 }
               >
-                <Shield className="h-4 w-4" />
+                {renderIcon("solar:shield-check-bold-duotone", { className: "text-[18px]" })}
                 <span className="font-medium">Админ</span>
               </NavLink>
             )}
@@ -76,7 +81,7 @@ export function AppTopNav() {
                   navigate("/", { replace: true });
                 }}
               >
-                <LogOut className="h-4 w-4" />
+                {renderIcon("solar:logout-3-bold-duotone", { className: "text-[18px]" })}
                 <span className="sr-only">Выйти</span>
               </Button>
             )}

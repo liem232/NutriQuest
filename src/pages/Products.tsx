@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Plus, Salad } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { PageBanner } from "@/components/PageBanner";
+import { renderIcon } from "@/lib/icons";
 import {
   addDoc,
   collection,
@@ -41,6 +41,14 @@ type Category = {
   id: string;
   name: string;
   icon: string | null;
+};
+
+const CATEGORY_ICON_FALLBACK: Record<string, string> = {
+  meat: "solar:chef-hat-heart-bold-duotone",
+  dairy: "solar:cup-hot-bold-duotone",
+  grains: "solar:wheat-bold-duotone",
+  fruits: "solar:apple-bold-duotone",
+  vegetables: "solar:leaf-bold-duotone",
 };
 
 const Products = () => {
@@ -199,6 +207,8 @@ const Products = () => {
       p.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  const categoryIcon = (cat: Category) => cat.icon ?? CATEGORY_ICON_FALLBACK[cat.id] ?? "solar:tag-bold-duotone";
+
   const handleAddProduct = async () => {
     if (!user || !newProduct.name || !newProduct.calories) return;
     try {
@@ -223,19 +233,22 @@ const Products = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-36 md:pb-24">
       <PageBanner
         eyebrow="Каталог"
-        title="Найди продукт за секунды"
+        title="Продукты"
         description="Поиск, категории и добавление своих продуктов на модерацию."
-        icon={<Salad className="h-5 w-5 text-primary-foreground" />}
+        icon={renderIcon("solar:magnifer-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
       />
 
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-display font-semibold">Каталог</h2>
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger asChild>
-            <Button variant="hero" size="sm"><Plus className="h-4 w-4 mr-1" /> Добавить</Button>
+            <Button variant="hero" size="sm">
+              <span className="mr-1">{renderIcon("solar:add-square-bold-duotone", { className: "text-[18px]" })}</span>
+              Добавить
+            </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Новый продукт</DialogTitle></DialogHeader>
@@ -249,7 +262,14 @@ const Products = () => {
                 <Select value={newProduct.category_id} onValueChange={(v) => setNewProduct({ ...newProduct, category_id: v })}>
                   <SelectTrigger><SelectValue placeholder="Выберите" /></SelectTrigger>
                   <SelectContent>
-                    {categories.map(c => <SelectItem key={c.id} value={c.id}>{c.icon} {c.name}</SelectItem>)}
+                    {categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        <span className="inline-flex items-center gap-2">
+                          {renderIcon(categoryIcon(c), { className: "text-[18px]" })}
+                          {c.name}
+                        </span>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -277,35 +297,47 @@ const Products = () => {
         </Dialog>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Поиск продуктов..." className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
+      <div className="sticky top-14 z-20 -mx-3 sm:-mx-4 md:mx-0 px-3 sm:px-4 md:px-0 pt-2 pb-3 bg-background/70 backdrop-blur-xl">
+        <div className="relative">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            {renderIcon("solar:magnifer-bold-duotone", { className: "text-[18px]" })}
+          </div>
+          <Input
+            placeholder="Поиск продуктов..."
+            className="pl-10"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
-      <Carousel opts={{ align: "start" }} className="relative">
-        <CarouselContent>
-          <CarouselItem className="basis-auto">
-            <Badge
-              variant={activeCat === "all" ? "default" : "secondary"}
-              className="cursor-pointer shrink-0"
-              onClick={() => setActiveCat("all")}
-            >
-              Все
-            </Badge>
-          </CarouselItem>
-          {categories.map((cat) => (
-            <CarouselItem key={cat.id} className="basis-auto">
+        <Carousel opts={{ align: "start" }} className="relative mt-3">
+          <CarouselContent>
+            <CarouselItem className="basis-auto">
               <Badge
-                variant={activeCat === cat.id ? "default" : "secondary"}
-                className="cursor-pointer shrink-0"
-                onClick={() => setActiveCat(cat.id)}
+                variant={activeCat === "all" ? "default" : "secondary"}
+                className="cursor-pointer shrink-0 h-10 px-4 text-sm rounded-full"
+                onClick={() => setActiveCat("all")}
               >
-                {cat.icon} {cat.name}
+                Все
               </Badge>
             </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+            {categories.map((cat) => (
+              <CarouselItem key={cat.id} className="basis-auto">
+                <Badge
+                  variant={activeCat === cat.id ? "default" : "secondary"}
+                  className="cursor-pointer shrink-0 h-10 px-4 text-sm rounded-full"
+                  onClick={() => setActiveCat(cat.id)}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    {renderIcon(categoryIcon(cat), { className: "text-[18px]" })}
+                    {cat.name}
+                  </span>
+                </Badge>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((p, i) => (
@@ -335,12 +367,12 @@ const Products = () => {
         <p className="text-center text-muted-foreground py-8">Продукты не найдены</p>
       )}
 
-      <div className="fixed left-0 right-0 z-40 bottom-20 md:bottom-6">
-        <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6">
-          <div className="glass-surface elevated border border-border/60 rounded-2xl p-3">
+      <div className="fixed left-0 right-0 z-40 bottom-0 md:bottom-6">
+        <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6 pb-[calc(max(env(safe-area-inset-bottom),0px)+5.25rem)] md:pb-0">
+          <div className="glass-surface elevated rounded-2xl p-3">
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur items-center justify-center">
-                <Search className="h-5 w-5 text-primary" />
+                {renderIcon("solar:magnifer-bold-duotone", { className: "text-[20px] text-primary" })}
               </div>
 
               <div className="min-w-0 flex-1">
@@ -355,7 +387,7 @@ const Products = () => {
                 className="h-11 px-4 rounded-xl"
                 onClick={() => setAddOpen(true)}
               >
-                <Plus className="h-4 w-4 mr-2" /> Добавить
+                <span className="mr-2">{renderIcon("solar:add-square-bold-duotone", { className: "text-[18px]" })}</span> Добавить
               </Button>
             </div>
           </div>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Lock, Medal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
+import { renderIcon } from "@/lib/icons";
 
 const titleFromXp = (xp: number, isAdmin?: boolean): string => {
   const thresholds = [
@@ -168,6 +168,34 @@ const Achievements = () => {
     })();
   }, [user?.uid]);
 
+  const currentIdx = currentTitleIndexByXp(Number(profile?.xp ?? 0));
+  const currentTitle = titleFromXp(profile?.xp ?? 0, isAdmin);
+  const nextTitle = TITLE_THRESHOLDS[Math.min(currentIdx + 1, TITLE_THRESHOLDS.length - 1)];
+  const currentTitleData = TITLE_THRESHOLDS[currentIdx];
+  const denom = nextTitle.xp - currentTitleData.xp;
+  const progressToNext =
+    !profile || nextTitle === currentTitleData || denom <= 0
+      ? 0
+      : Math.max(0, Math.min(100, Math.round(((profile.xp - currentTitleData.xp) / denom) * 100)));
+
+  useEffect(() => {
+    if (!profile) return;
+    // Animate once per page entry (and when user changes): 0 -> actual.
+    setProgressAnim(0);
+    setProgressKey((k) => k + 1);
+    const t = setTimeout(() => setProgressAnim(progressToNext), 60);
+    return () => clearTimeout(t);
+  }, [user?.uid, profile?.xp]);
+
+  useEffect(() => {
+    if (!profile) return;
+    // If XP changes while staying on the page, animate smoothly to new value.
+    setProgressAnim(progressToNext);
+  }, [progressToNext, profile?.xp]);
+
+  const titleRarity = rarityByRank(titleRank(profile?.title));
+  const titleTheme = rarityTheme(titleRarity);
+
   if (!profile) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -175,32 +203,6 @@ const Achievements = () => {
       </div>
     );
   }
-
-  const currentIdx = currentTitleIndexByXp(Number(profile.xp ?? 0));
-  const currentTitle = titleFromXp(profile?.xp ?? 0, isAdmin);
-  const nextTitle = TITLE_THRESHOLDS[Math.min(currentIdx + 1, TITLE_THRESHOLDS.length - 1)];
-  const currentTitleData = TITLE_THRESHOLDS[currentIdx];
-  const denom = nextTitle.xp - currentTitleData.xp;
-  const progressToNext =
-    nextTitle === currentTitleData || denom <= 0
-      ? 100
-      : Math.max(0, Math.min(100, Math.round(((profile.xp - currentTitleData.xp) / denom) * 100)));
-
-  useEffect(() => {
-    // Animate once per page entry (and when user changes): 0 -> actual.
-    setProgressAnim(0);
-    setProgressKey((k) => k + 1);
-    const t = setTimeout(() => setProgressAnim(progressToNext), 60);
-    return () => clearTimeout(t);
-  }, [user?.uid]);
-
-  useEffect(() => {
-    // If XP changes while staying on the page, animate smoothly to new value.
-    setProgressAnim(progressToNext);
-  }, [progressToNext]);
-
-  const titleRarity = rarityByRank(titleRank(profile.title));
-  const titleTheme = rarityTheme(titleRarity);
 
   return (
     <motion.div variants={anim.container} initial="hidden" animate="show" className="space-y-8 pb-36 md:pb-24">
@@ -215,7 +217,7 @@ const Achievements = () => {
             </p>
           </div>
           <div className="h-11 w-11 rounded-2xl gradient-gold flex items-center justify-center shrink-0">
-            <Medal className="h-5 w-5 text-primary-foreground" />
+            {renderIcon("solar:medal-ribbon-star-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
           </div>
         </div>
       </motion.div>
@@ -268,7 +270,7 @@ const Achievements = () => {
               transition={{ type: "spring", stiffness: 320, damping: 16 }}
               className="relative h-12 w-12 rounded-2xl gradient-gold flex items-center justify-center shadow-[var(--shadow-soft)]"
             >
-              <Crown className="h-7 w-7 text-primary-foreground" />
+              {renderIcon("solar:crown-bold-duotone", { className: "text-[28px] text-primary-foreground" })}
             </motion.div>
 
             <div className="relative text-left">
@@ -333,7 +335,7 @@ const Achievements = () => {
                             loading="lazy"
                           />
                         ) : (
-                          <span className="text-3xl relative">{a.icon}</span>
+                          <div className="text-3xl relative">{renderIcon(a.icon, { className: "text-[28px]" })}</div>
                         )}
                         <div className="flex-1 relative">
                           <p className="font-medium">{a.name}</p>
@@ -344,7 +346,7 @@ const Achievements = () => {
                           )}
                           {!unlocked && (
                             <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                              <Lock className="h-3 w-3" /> Заблокировано
+                              {renderIcon("solar:lock-keyhole-bold-duotone", { className: "text-[14px]" })} Заблокировано
                             </div>
                           )}
                         </div>
@@ -393,7 +395,7 @@ const Achievements = () => {
           <div className="glass-surface elevated border border-border/60 rounded-2xl p-3">
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur items-center justify-center">
-                <Crown className="h-5 w-5 text-accent" />
+                {renderIcon("solar:crown-bold-duotone", { className: "text-[20px] text-accent" })}
               </div>
 
               <div className="min-w-0 flex-1">

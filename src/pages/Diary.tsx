@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Plus, Minus, Trash2, Search, Calendar, Flame, Beef, Droplet, Wheat } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +26,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
+import { renderIcon } from "@/lib/icons";
 
 type DiaryEntry = {
   id: string;
@@ -40,11 +40,11 @@ type DiaryEntry = {
   c_per_100: number;
 };
 
-const mealLabels: Record<string, string> = {
-  breakfast: "🌅 Завтрак",
-  lunch: "☀️ Обед",
-  dinner: "🌙 Ужин",
-  snack: "🍎 Перекус",
+const mealLabels: Record<string, { label: string; icon: string }> = {
+  breakfast: { label: "Завтрак", icon: "solar:sunrise-bold-duotone" },
+  lunch: { label: "Обед", icon: "solar:sun-2-bold-duotone" },
+  dinner: { label: "Ужин", icon: "solar:moon-bold-duotone" },
+  snack: { label: "Перекус", icon: "solar:apple-bold-duotone" },
 };
 
 const Diary = () => {
@@ -273,7 +273,7 @@ const Diary = () => {
         eyebrow="Дневник"
         title="Заполняй день красиво"
         description="Добавляй продукты, контролируй граммы и держи баланс БЖУ."
-        icon={<Calendar className="h-5 w-5 text-primary-foreground" />}
+        icon={renderIcon("solar:calendar-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
         right={
           <Input
             type="date"
@@ -287,10 +287,10 @@ const Diary = () => {
       <Carousel opts={{ align: "start" }} className="relative">
         <CarouselContent>
           {[
-            { title: "Ккал", value: `${totalCal}`, meta: `из ${goal}`, icon: <Flame className="h-5 w-5 text-foreground" /> },
-            { title: "Белки", value: `${totalP}г`, meta: `цель ${profile?.protein_goal ?? 0}г`, icon: <Beef className="h-5 w-5 text-foreground" /> },
-            { title: "Жиры", value: `${totalF}г`, meta: `цель ${profile?.fat_goal ?? 0}г`, icon: <Droplet className="h-5 w-5 text-foreground" /> },
-            { title: "Углеводы", value: `${totalC}г`, meta: `цель ${profile?.carbs_goal ?? 0}г`, icon: <Wheat className="h-5 w-5 text-foreground" /> },
+            { title: "Ккал", value: `${totalCal}`, meta: `из ${goal}`, icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-foreground" }) },
+            { title: "Белки", value: `${totalP}г`, meta: `цель ${profile?.protein_goal ?? 0}г`, icon: renderIcon("solar:bone-bold-duotone", { className: "text-[20px] text-foreground" }) },
+            { title: "Жиры", value: `${totalF}г`, meta: `цель ${profile?.fat_goal ?? 0}г`, icon: renderIcon("solar:drop-bold-duotone", { className: "text-[20px] text-foreground" }) },
+            { title: "Углеводы", value: `${totalC}г`, meta: `цель ${profile?.carbs_goal ?? 0}г`, icon: renderIcon("solar:wheat-bold-duotone", { className: "text-[20px] text-foreground" }) },
           ].map((s) => (
             <CarouselItem key={s.title} className="basis-1/2 sm:basis-1/3">
               <Card className="card-hover overflow-hidden">
@@ -316,9 +316,41 @@ const Diary = () => {
       </Carousel>
 
       <Tabs defaultValue="breakfast" onValueChange={setCurrentMeal}>
-        <TabsList className="grid grid-cols-4 w-full">
-          {Object.entries(mealLabels).map(([key, label]) => (
-            <TabsTrigger key={key} value={key} className="text-xs sm:text-sm">{label}</TabsTrigger>
+        <TabsList className="relative grid grid-cols-4 w-full p-1 rounded-2xl bg-card/40 border border-border/60 backdrop-blur">
+          {Object.entries(mealLabels).map(([key, v]) => (
+            <TabsTrigger
+              key={key}
+              value={key}
+              className="relative overflow-hidden rounded-xl py-2 text-xs sm:text-sm text-muted-foreground data-[state=active]:text-foreground active:scale-[0.99] transition-transform"
+            >
+              {currentMeal === key ? (
+                <motion.div
+                  aria-hidden
+                  layoutId="meal-segment-indicator"
+                  className="absolute inset-0 rounded-xl bg-card/70 backdrop-blur border border-border/60 shadow-[var(--shadow-card)] overflow-hidden"
+                  transition={{ type: "spring", stiffness: 520, damping: 42 }}
+                >
+                  <motion.div
+                    key={currentMeal}
+                    aria-hidden
+                    className="absolute -inset-y-4 -left-1/2 w-[200%] opacity-0"
+                    initial={{ x: "-30%", opacity: 0 }}
+                    animate={{ x: "30%", opacity: [0, 0.35, 0] }}
+                    transition={{ duration: 0.42, ease: "easeOut" }}
+                    style={{
+                      willChange: "transform, opacity",
+                      background:
+                        "linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent)",
+                      transform: "skewX(-18deg)",
+                    }}
+                  />
+                </motion.div>
+              ) : null}
+              <span className="relative z-10 inline-flex items-center justify-center gap-1.5">
+                {renderIcon(v.icon, { className: "text-[16px]" })}
+                {v.label}
+              </span>
+            </TabsTrigger>
           ))}
         </TabsList>
 
@@ -334,15 +366,15 @@ const Diary = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateGrams(entry.id, -10)}>
-                        <Minus className="h-3 w-3" />
+                        {renderIcon("solar:minus-square-bold-duotone", { className: "text-[16px]" })}
                       </Button>
                       <span className="w-12 text-center text-sm font-medium">{entry.grams}г</span>
                       <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateGrams(entry.id, 10)}>
-                        <Plus className="h-3 w-3" />
+                        {renderIcon("solar:add-square-bold-duotone", { className: "text-[16px]" })}
                       </Button>
                     </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => removeEntry(entry.id)}>
-                      <Trash2 className="h-4 w-4" />
+                      {renderIcon("solar:trash-bin-trash-bold-duotone", { className: "text-[18px]" })}
                     </Button>
                   </CardContent>
                 </Card>
@@ -352,7 +384,7 @@ const Diary = () => {
             <Dialog open={addDialogOpen && currentMeal === meal} onOpenChange={setAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="w-full" onClick={() => { setCurrentMeal(meal); setAddDialogOpen(true); }}>
-                  <Plus className="h-4 w-4 mr-2" /> Добавить продукт
+                  <span className="mr-2">{renderIcon("solar:add-square-bold-duotone", { className: "text-[18px]" })}</span> Добавить продукт
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -370,7 +402,9 @@ const Diary = () => {
                   </div>
                 )}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    {renderIcon("solar:magnifer-bold-duotone", { className: "text-[18px]" })}
+                  </div>
                   <Input placeholder="Начните вводить..." className="pl-10" value={searchQ} onChange={(e) => setSearchQ(e.target.value)} />
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -384,7 +418,7 @@ const Diary = () => {
                         <p className="font-medium text-sm">{p.name}</p>
                         <p className="text-xs text-muted-foreground">{p.calories_per_100g} ккал / 100г • Б{p.protein_per_100g} Ж{p.fat_per_100g} У{p.carbs_per_100g}</p>
                       </div>
-                      <Plus className="h-4 w-4 text-primary" />
+                      {renderIcon("solar:add-circle-bold-duotone", { className: "text-[18px] text-primary" })}
                     </div>
                   ))}
                   {searchQ && productsLoaded && approvedProducts.length === 0 && (
@@ -423,7 +457,7 @@ const Diary = () => {
           <div className="glass-surface elevated border border-border/60 rounded-2xl p-3">
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur items-center justify-center">
-                <Flame className="h-5 w-5 text-primary" />
+                {renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-primary" })}
               </div>
 
               <div className="min-w-0 flex-1">
@@ -440,7 +474,7 @@ const Diary = () => {
                   setAddDialogOpen(true);
                 }}
               >
-                <Plus className="h-4 w-4 mr-2" /> Добавить
+                <span className="mr-2">{renderIcon("solar:add-square-bold-duotone", { className: "text-[18px]" })}</span> Добавить
               </Button>
             </div>
           </div>

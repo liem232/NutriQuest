@@ -174,7 +174,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     const directRef = doc(db, "profiles", user.uid);
-    let inFlightTitleUpdate = false;
 
     const unsub = onSnapshot(
       directRef,

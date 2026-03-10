@@ -3,7 +3,7 @@ import { AppTopNav } from "@/components/AppTopNav";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Leaf } from "lucide-react";
+import { renderIcon } from "@/lib/icons";
 import { useAuth } from "@/contexts/AuthContext";
 import confetti from "canvas-confetti";
 
@@ -130,11 +130,12 @@ export default function AppLayout() {
               className="relative"
             >
               <motion.div
-                animate={{ scale: [1, 1.03, 1], rotate: [0, 1.5, 0] }}
+                initial={{ scale: 0.65, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.9, ease: "easeInOut" }}
                 className="h-16 w-16 rounded-3xl gradient-primary flex items-center justify-center shadow-[var(--shadow-elevated)]"
               >
-                <Leaf className="h-7 w-7 text-primary-foreground" />
+                {renderIcon("solar:leaf-bold-duotone", { className: "text-[28px] text-primary-foreground" })}
               </motion.div>
             </motion.div>
           </motion.div>

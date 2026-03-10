@@ -1,8 +1,5 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, BookOpen, Search, Trophy, User, Shield, Leaf,
-  type LucideIcon 
-} from "lucide-react";
+import { renderIcon } from "@/lib/icons";
 import {
   Sidebar,
   SidebarContent,
@@ -19,19 +16,19 @@ import { useAuth } from "@/contexts/AuthContext";
 interface NavItem {
   title: string;
   url: string;
-  icon: LucideIcon;
+  icon: string;
 }
 
 const mainItems: NavItem[] = [
-  { title: "Дашборд", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Дневник", url: "/diary", icon: BookOpen },
-  { title: "Продукты", url: "/products", icon: Search },
-  { title: "Достижения", url: "/achievements", icon: Trophy },
-  { title: "Профиль", url: "/profile", icon: User },
+  { title: "Дашборд", url: "/dashboard", icon: "solar:home-2-bold-duotone" },
+  { title: "Дневник", url: "/diary", icon: "solar:notebook-bold-duotone" },
+  { title: "Продукты", url: "/products", icon: "solar:magnifer-bold-duotone" },
+  { title: "Достижения", url: "/achievements", icon: "solar:cup-star-bold-duotone" },
+  { title: "Профиль", url: "/profile", icon: "solar:user-bold-duotone" },
 ];
 
 const adminItems: NavItem[] = [
-  { title: "Админ-панель", url: "/admin", icon: Shield },
+  { title: "Админ-панель", url: "/admin", icon: "solar:shield-check-bold-duotone" },
 ];
 
 export function AppSidebar() {
@@ -52,7 +49,7 @@ export function AppSidebar() {
           {!collapsed ? (
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center shadow-sm">
-                <Leaf className="h-5 w-5 text-primary-foreground" />
+                {renderIcon("solar:leaf-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
               </div>
               <div className="min-w-0">
                 <h1 className="text-base font-display font-bold leading-none">
@@ -65,7 +62,7 @@ export function AppSidebar() {
             </div>
           ) : (
             <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center shadow-sm">
-              <Leaf className="h-5 w-5 text-primary-foreground" />
+              {renderIcon("solar:leaf-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
             </div>
           )}
         </div>
@@ -86,10 +83,11 @@ export function AppSidebar() {
                           : "text-muted-foreground hover:bg-sidebar-accent/80 hover:text-foreground")
                       }
                     >
-                      <item.icon className={
-                        `h-5 w-5 shrink-0 transition-colors ` +
-                        (isActive(item.url) ? "text-primary" : "text-muted-foreground group-hover:text-primary")
-                      } />
+                      {renderIcon(item.icon, {
+                        className:
+                          `text-[20px] shrink-0 transition-colors ` +
+                          (isActive(item.url) ? "text-primary" : "text-muted-foreground group-hover:text-primary"),
+                      })}
                       {!collapsed && (
                         <span className={isActive(item.url) ? "font-medium" : ""}>
                           {item.title}
@@ -120,10 +118,11 @@ export function AppSidebar() {
                             : "text-muted-foreground hover:bg-sidebar-accent/80 hover:text-foreground")
                         }
                       >
-                        <item.icon className={
-                          `h-5 w-5 shrink-0 transition-colors ` +
-                          (isActive(item.url) ? "text-primary" : "text-muted-foreground group-hover:text-primary")
-                        } />
+                        {renderIcon(item.icon, {
+                          className:
+                            `text-[20px] shrink-0 transition-colors ` +
+                            (isActive(item.url) ? "text-primary" : "text-muted-foreground group-hover:text-primary"),
+                        })}
                         {!collapsed && (
                           <span className={isActive(item.url) ? "font-medium" : ""}>
                             {item.title}

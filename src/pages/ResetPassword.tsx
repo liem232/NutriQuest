@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { KeyRound } from "lucide-react";
+import { renderIcon } from "@/lib/icons";
 import { confirmPasswordReset } from "firebase/auth";
 import { auth } from "@/integrations/firebase/client";
 
@@ -50,7 +50,7 @@ const ResetPassword = () => {
         <div className="glass-surface elevated rounded-3xl p-6">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-2xl gradient-primary flex items-center justify-center shadow-sm">
-              <KeyRound className="h-5 w-5 text-primary-foreground" />
+              {renderIcon("solar:key-minimalistic-square-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
             </div>
             <div>
               <h1 className="text-lg font-display font-bold leading-none">Новый пароль</h1>

@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Compass } from "lucide-react";
+import { renderIcon } from "@/lib/icons";
 
 const NotFound = () => {
   const location = useLocation();
@@ -19,7 +19,7 @@ const NotFound = () => {
             <p className="text-sm font-medium truncate">{location.pathname}</p>
           </div>
           <div className="h-11 w-11 rounded-2xl gradient-primary flex items-center justify-center">
-            <Compass className="h-5 w-5 text-primary-foreground" />
+            {renderIcon("solar:compass-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
           </div>
         </div>
 

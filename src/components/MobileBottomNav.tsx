@@ -1,12 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Search, Trophy, User } from "lucide-react";
+import { renderIcon } from "@/lib/icons";
 
 const items = [
-  { to: "/dashboard", label: "Дом", icon: LayoutDashboard },
-  { to: "/diary", label: "Дневник", icon: BookOpen },
-  { to: "/products", label: "Поиск", icon: Search },
-  { to: "/achievements", label: "Титулы", icon: Trophy },
-  { to: "/profile", label: "Я", icon: User },
+  { to: "/dashboard", label: "Дом", icon: "solar:home-2-bold-duotone" },
+  { to: "/diary", label: "Дневник", icon: "solar:notebook-bold-duotone" },
+  { to: "/products", label: "Поиск", icon: "solar:magnifer-bold-duotone" },
+  { to: "/achievements", label: "Титулы", icon: "solar:cup-star-bold-duotone" },
+  { to: "/profile", label: "Я", icon: "solar:user-bold-duotone" },
 ] as const;
 
 export function MobileBottomNav() {
@@ -26,7 +26,7 @@ export function MobileBottomNav() {
                     : "text-muted-foreground hover:text-foreground hover:bg-card/40")
                 }
               >
-                <item.icon className="h-5 w-5" />
+                {renderIcon(item.icon, { className: "text-[20px]" })}
                 <span className="leading-none">{item.label}</span>
               </NavLink>
             ))}

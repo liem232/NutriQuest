@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, Shield, Users, Award, Package, Ban, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { renderIcon } from "@/lib/icons";
 
 const Admin = () => {
   const { user: currentUser } = useAuth();
@@ -412,30 +412,31 @@ const Admin = () => {
             )}
           </div>
           <div className="h-11 w-11 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
-            <Shield className="h-5 w-5 text-primary" />
+            {renderIcon("solar:shield-check-bold-duotone", { className: "text-[20px] text-primary" })}
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { icon: <Users className="h-5 w-5" />, label: "Пользователей", value: stats.users },
-          { icon: <Package className="h-5 w-5" />, label: "Продуктов", value: stats.products },
-          { icon: <Award className="h-5 w-5" />, label: "Достижений", value: stats.achievements },
-          { icon: <Ban className="h-5 w-5" />, label: "Заблокировано", value: stats.blocked },
+          { icon: renderIcon("solar:users-group-rounded-bold-duotone", { className: "text-[20px]" }), label: "Пользователей", value: stats.users },
+          { icon: renderIcon("solar:box-bold-duotone", { className: "text-[20px]" }), label: "Продуктов", value: stats.products },
+          { icon: renderIcon("solar:medal-ribbon-star-bold-duotone", { className: "text-[20px]" }), label: "Достижений", value: stats.achievements },
+          { icon: renderIcon("solar:ban-bold-duotone", { className: "text-[20px]" }), label: "Заблокировано", value: stats.blocked },
         ].map((s, i) => (
           <Card key={i} className="card-hover overflow-hidden">
             <CardContent className="p-4 relative">
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
-              <div className="relative">
-                <div className="flex items-center justify-between gap-2 text-muted-foreground mb-1">
-                  <div className="flex items-center gap-2">{s.icon}<span className="text-xs">{s.label}</span></div>
-                  <div className="h-8 w-8 rounded-xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center">
-                    <span className="text-xs">#{i + 1}</span>
-                  </div>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-accent/10" />
+              <div className="relative flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center">
+                  {s.icon}
                 </div>
-                <p className="text-2xl font-display font-bold">{s.value}</p>
+                <div className="flex items-center gap-2">{s.icon}<span className="text-xs">{s.label}</span></div>
+                <div className="h-8 w-8 rounded-xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center">
+                  <span className="text-xs">#{i + 1}</span>
+                </div>
               </div>
+              <p className="text-2xl font-display font-bold">{s.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -452,7 +453,9 @@ const Admin = () => {
         <TabsContent value="users" className="space-y-4 mt-4">
           <div className="flex gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                {renderIcon("solar:magnifer-bold-duotone", { className: "text-[18px]" })}
+              </div>
               <Input placeholder="Поиск..." className="pl-10" value={searchUsers} onChange={(e) => setSearchUsers(e.target.value)} />
             </div>
             <Select value={titleFilter} onValueChange={setTitleFilter}>
@@ -476,7 +479,7 @@ const Admin = () => {
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm truncate">{u.display_name}</p>
+                      <p className="font-medium text-sm">{u.display_name}</p>
                       {(u as any).is_blocked && <Badge variant="destructive" className="text-xs">Заблокирован</Badge>}
                     </div>
                     <p className="text-xs text-muted-foreground">{u.xp} XP • {u.total_days} дн. • {u.streak_days}🔥</p>
@@ -490,12 +493,14 @@ const Admin = () => {
                     </SelectContent>
                   </Select>
                   <Button
-                    variant={(u as any).is_blocked ? "outline" : "destructive"}
+                    variant={(u as any).is_blocked ? "secondary" : "destructive"}
                     size="sm"
                     className="text-xs"
                     onClick={() => toggleBlock(u.user_id, (u as any).is_blocked)}
                   >
-                    {(u as any).is_blocked ? <CheckCircle className="h-3 w-3 mr-1" /> : <Ban className="h-3 w-3 mr-1" />}
+                    {(u as any).is_blocked
+                      ? <span className="mr-1">{renderIcon("solar:check-circle-bold-duotone", { className: "text-[14px]" })}</span>
+                      : <span className="mr-1">{renderIcon("solar:ban-bold-duotone", { className: "text-[14px]" })}</span>}
                     {(u as any).is_blocked ? "Разблок." : "Блок."}
                   </Button>
 
@@ -551,7 +556,9 @@ const Admin = () => {
         <TabsContent value="catalog" className="space-y-4 mt-4">
           <div className="flex gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                {renderIcon("solar:magnifer-bold-duotone", { className: "text-[18px]" })}
+              </div>
               <Input
                 placeholder="Поиск продукта..."
                 className="pl-10"

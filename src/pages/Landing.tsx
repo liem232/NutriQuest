@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Leaf, LineChart, BookOpen, Trophy, Search } from "lucide-react";
+import { renderIcon } from "@/lib/icons";
 import {
   Carousel,
   CarouselContent,
@@ -60,28 +60,28 @@ const Landing = () => {
       desc: "Калории и БЖУ — одним взглядом. Видно, что делать дальше.",
       badge: "Дашборд",
       accent: "from-emerald-500/15 via-sky-500/10 to-transparent",
-      icon: <LineChart className="h-5 w-5 text-foreground" />,
+      icon: renderIcon("solar:chart-bold-duotone", { className: "text-[20px] text-foreground" }),
     },
     {
       title: "Дневник питания",
       desc: "Добавляй продукты, регулируй граммы — всё быстро и удобно с телефона.",
       badge: "Дневник",
       accent: "from-amber-500/15 via-emerald-500/10 to-transparent",
-      icon: <BookOpen className="h-5 w-5 text-foreground" />,
+      icon: renderIcon("solar:notebook-bold-duotone", { className: "text-[20px] text-foreground" }),
     },
     {
       title: "Достижения и серия дней",
       desc: "XP, титулы и streak делают привычку устойчивой — хочется возвращаться.",
       badge: "Геймификация",
       accent: "from-violet-500/15 via-amber-500/10 to-transparent",
-      icon: <Trophy className="h-5 w-5 text-foreground" />,
+      icon: renderIcon("solar:cup-star-bold-duotone", { className: "text-[20px] text-foreground" }),
     },
     {
       title: "Каталог продуктов",
       desc: "Ищи, фильтруй, добавляй свои продукты на модерацию.",
       badge: "Продукты",
       accent: "from-sky-500/15 via-emerald-500/10 to-transparent",
-      icon: <Search className="h-5 w-5 text-foreground" />,
+      icon: renderIcon("solar:magnifer-bold-duotone", { className: "text-[20px] text-foreground" }),
     },
   ];
 
@@ -307,7 +307,7 @@ const Landing = () => {
             <div className="glass-surface elevated rounded-3xl p-5 sm:p-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="h-10 w-10 rounded-2xl gradient-primary flex items-center justify-center shadow-sm">
-                  <Leaf className="h-5 w-5 text-primary-foreground" />
+                  {renderIcon("solar:leaf-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
                 </div>
                 <div>
                   <p className="text-sm font-display font-semibold leading-none">Добро пожаловать</p>
