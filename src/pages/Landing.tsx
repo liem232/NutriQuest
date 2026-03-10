@@ -241,8 +241,8 @@ const Landing = () => {
         transition={{ duration: 0.55 }}
         className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-8 pb-24 sm:py-14"
       >
-        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-          <div className="text-center lg:text-left">
+        <div className="grid min-w-0 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <div className="min-w-0 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-primary" />
               Быстрый старт • Персональные нормы • Геймификация
@@ -319,8 +319,8 @@ const Landing = () => {
             </div>
           </div>
 
-          <div className="w-full max-w-md mx-auto lg:mx-0">
-            <div className="glass-surface elevated rounded-3xl p-5 sm:p-6">
+          <div className="min-w-0 flex justify-center lg:justify-end">
+            <div className="w-full max-w-md glass-surface elevated rounded-3xl p-5 sm:p-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="h-10 w-10 rounded-2xl gradient-primary flex items-center justify-center shadow-sm">
                   {renderIcon("solar:leaf-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
