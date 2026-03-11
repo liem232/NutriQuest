@@ -61,7 +61,7 @@ const Admin = () => {
       "Пусть модерация будет быстрой, а пользователи — счастливыми.",
       "Сделаем сегодня панель админа ещё мощнее.",
       "Сегодня отличный день, чтобы закрыть пару важных задач.",
-      "Меньше багов, больше релизов.",
+      "Меньше слов - больше дела",
       "Пусть всё работает с первого раза.",
       "Прокачаем продукт так, чтобы им гордиться.",
     ];
@@ -427,16 +427,18 @@ const Admin = () => {
           <Card key={i} className="card-hover overflow-hidden">
             <CardContent className="p-4 relative">
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-accent/10" />
-              <div className="relative flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center">
-                  {s.icon}
+              <div className="relative flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
+                    {s.icon}
+                  </div>
+                  <span className="text-xs text-muted-foreground truncate">{s.label}</span>
                 </div>
-                <div className="flex items-center gap-2">{s.icon}<span className="text-xs">{s.label}</span></div>
-                <div className="h-8 w-8 rounded-xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center">
+                <div className="h-8 w-8 rounded-xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
                   <span className="text-xs">#{i + 1}</span>
                 </div>
               </div>
-              <p className="text-2xl font-display font-bold">{s.value}</p>
+              <p className="mt-2 text-2xl font-display font-bold">{s.value}</p>
             </CardContent>
           </Card>
         ))}
