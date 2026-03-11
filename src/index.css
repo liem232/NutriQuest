@@ -20,7 +20,7 @@
     --secondary-foreground: 222 40% 10%;
 
     --muted: 215 25% 95%;
-    --muted-foreground: 215 16% 44%;
+    --muted-foreground: 215 16% 38%;
 
     --accent: 38 92% 55%;
     --accent-foreground: 0 0% 100%;
@@ -28,8 +28,8 @@
     --destructive: 0 74% 54%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 18% 90%;
-    --input: 214 18% 90%;
+    --border: 214 18% 88%;
+    --input: 214 18% 88%;
     --ring: 162 72% 42%;
 
     --radius: 1rem;
@@ -81,7 +81,7 @@
     --secondary-foreground: 210 40% 95%;
 
     --muted: 222 20% 16%;
-    --muted-foreground: 215 20% 60%;
+    --muted-foreground: 215 20% 66%;
 
     --accent: 38 92% 55%;
     --accent-foreground: 0 0% 100%;
@@ -89,8 +89,8 @@
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 222 18% 20%;
-    --input: 222 18% 20%;
+    --border: 222 18% 22%;
+    --input: 222 18% 22%;
     --ring: 162 72% 48%;
 
     --sidebar-background: 222 30% 6%;
@@ -174,8 +174,8 @@
   }
 
   .glass-surface {
-    @apply bg-card/75 backdrop-blur-xl;
-    border: 1px solid hsl(var(--border) / 0.55);
+    @apply bg-card/80 backdrop-blur-xl;
+    border: 1px solid hsl(var(--border) / 0.6);
     box-shadow: var(--shadow-card);
   }
 
