@@ -20,6 +20,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswor
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "@/integrations/firebase/client";
 import { calculateDailyCalories } from "@/lib/calculateDailyCalories";
+import { logActivityEvent } from "@/lib/activity";
 
 const activityLabels: Record<string, string> = {
   sedentary: "Сидячий образ жизни",
@@ -100,7 +101,8 @@ const Landing = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      const cred = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      await logActivityEvent({ userId: cred.user.uid, type: "auth_login" });
     } catch (e: any) {
       toast({ variant: "destructive", title: "Ошибка входа", description: e?.message ?? "Ошибка входа" });
     }
@@ -204,6 +206,8 @@ const Landing = () => {
       );
 
       await setDoc(doc(db, "user_roles", uid), { user_id: uid, role: "user" }, { merge: true });
+
+      await logActivityEvent({ userId: uid, type: "auth_register" });
     } catch (e: any) {
       const code = String(e?.code ?? "");
       let hint: string | null = null;

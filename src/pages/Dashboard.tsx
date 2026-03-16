@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { renderIcon } from "@/lib/icons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -77,8 +77,9 @@ function rarityTheme(rarity: Rarity) {
 const Dashboard = () => {
   const { user, profile, refreshProfile } = useAuth();
   const { toast } = useToast();
+  const reduceMotion = useReducedMotion();
   const [todayData, setTodayData] = useState({ calories: 0, protein: 0, fat: 0, carbs: 0 });
-  const [weekData, setWeekData] = useState<{ day: string; pct: number }[]>([]);
+  const [weekData, setWeekData] = useState<{ day: string; pct: number; protein: number; fat: number; carbs: number }[]>([]);
   const [monthData, setMonthData] = useState<{ day: number; cal: number }[]>([]);
   const [recentAchievements, setRecentAchievements] = useState<any[]>([]);
   const [recommendations, setRecommendations] = useState<any[]>([]);
@@ -177,17 +178,27 @@ const Dashboard = () => {
           );
           const snap = await getDocs(q);
           let total = 0;
+          let p = 0;
+          let f = 0;
+          let c = 0;
           snap.forEach((docSnap) => {
             const e: any = docSnap.data();
             const grams = Number(e.grams ?? 0);
             const product = e.product ?? e.products ?? e.product_snapshot ?? {};
-            total += (grams / 100) * Number(product.calories_per_100g ?? 0);
+            const mult = grams / 100;
+            total += mult * Number(product.calories_per_100g ?? 0);
+            p += mult * Number(product.protein_per_100g ?? 0);
+            f += mult * Number(product.fat_per_100g ?? 0);
+            c += mult * Number(product.carbs_per_100g ?? 0);
           });
           return {
             day: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"][
               new Date(date).getDay() === 0 ? 6 : new Date(date).getDay() - 1
             ],
             pct: Math.min(100, Math.round((total / ((profile as any).daily_calories || 2200)) * 100)),
+            protein: Math.round(p),
+            fat: Math.round(f),
+            carbs: Math.round(c),
           };
         } catch {
           return {
@@ -195,6 +206,9 @@ const Dashboard = () => {
               new Date(date).getDay() === 0 ? 6 : new Date(date).getDay() - 1
             ],
             pct: 0,
+            protein: 0,
+            fat: 0,
+            carbs: 0,
           };
         }
       })
@@ -269,6 +283,14 @@ const Dashboard = () => {
   const goal = profile.daily_calories || 2200;
   const pct = Math.min(100, Math.round((todayData.calories / goal) * 100));
   const weekAvg = weekData.length ? Math.round(weekData.reduce((s, d) => s + d.pct, 0) / weekData.filter(d => d.pct > 0).length || 1) : 0;
+
+  const calDiff = Math.round(todayData.calories - goal);
+  const pDiff = Math.round(todayData.protein - (profile.protein_goal ?? 0));
+  const fDiff = Math.round(todayData.fat - (profile.fat_goal ?? 0));
+  const cDiff = Math.round(todayData.carbs - (profile.carbs_goal ?? 0));
+
+  const diffLabel = (diff: number, unit = "") => (diff >= 0 ? `+${diff}${unit}` : `${diff}${unit}`);
+  const diffTone = (diff: number) => (diff > 0 ? "text-amber-600" : diff < 0 ? "text-sky-600" : "text-emerald-600");
 
   const bju = [
     { name: "Белки", value: todayData.protein || 1, color: "hsl(210 80% 55%)" },
@@ -481,23 +503,32 @@ const Dashboard = () => {
                 <div>
                   <p className="text-4xl font-display font-bold">{todayData.calories}</p>
                   <p className="text-muted-foreground text-sm">из {goal} ккал</p>
+                  <p className={`text-xs mt-1 ${diffTone(calDiff)}`}>{calDiff === 0 ? "Ровно по норме" : calDiff > 0 ? `Перебор ${diffLabel(calDiff, " ккал")}` : `Недобор ${diffLabel(calDiff, " ккал")}`}</p>
                 </div>
                 <p className="text-3xl font-display font-bold text-primary">{pct}%</p>
               </div>
               <div className="relative h-4 rounded-full bg-muted overflow-hidden">
-                <motion.div className="absolute inset-y-0 left-0 rounded-full gradient-primary" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1 }} />
+                <motion.div
+                  className="absolute inset-y-0 left-0 rounded-full gradient-primary"
+                  initial={reduceMotion ? false : { width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={reduceMotion ? { duration: 0 } : { duration: 1 }}
+                />
               </div>
               <div className="grid grid-cols-3 gap-3 text-center text-sm">
                 <div className="p-2 rounded-lg bg-muted/50">
                   <p className="font-medium">{todayData.protein}г <span className="text-xs text-muted-foreground">/ {profile.protein_goal}</span></p>
+                  <p className={`text-xs mt-0.5 ${diffTone(pDiff)}`}>{pDiff === 0 ? "ровно" : pDiff > 0 ? `+${pDiff}г` : `${pDiff}г`}</p>
                   <p className="text-muted-foreground text-xs">Белки</p>
                 </div>
                 <div className="p-2 rounded-lg bg-muted/50">
                   <p className="font-medium">{todayData.fat}г <span className="text-xs text-muted-foreground">/ {profile.fat_goal}</span></p>
+                  <p className={`text-xs mt-0.5 ${diffTone(fDiff)}`}>{fDiff === 0 ? "ровно" : fDiff > 0 ? `+${fDiff}г` : `${fDiff}г`}</p>
                   <p className="text-muted-foreground text-xs">Жиры</p>
                 </div>
                 <div className="p-2 rounded-lg bg-muted/50">
                   <p className="font-medium">{todayData.carbs}г <span className="text-xs text-muted-foreground">/ {profile.carbs_goal}</span></p>
+                  <p className={`text-xs mt-0.5 ${diffTone(cDiff)}`}>{cDiff === 0 ? "ровно" : cDiff > 0 ? `+${cDiff}г` : `${cDiff}г`}</p>
                   <p className="text-muted-foreground text-xs">Углеводы</p>
                 </div>
               </div>
@@ -535,11 +566,34 @@ const Dashboard = () => {
               <div key={d.day} className="flex items-center gap-3">
                 <span className="text-sm w-6 text-muted-foreground">{d.day}</span>
                 <div className="flex-1 relative h-3 rounded-full bg-muted overflow-hidden">
-                  <motion.div className="absolute inset-y-0 left-0 rounded-full gradient-primary" initial={{ width: 0 }} animate={{ width: `${d.pct}%` }} transition={{ duration: 0.8 }} />
+                  <motion.div
+                    className="absolute inset-y-0 left-0 rounded-full gradient-primary"
+                    initial={reduceMotion ? false : { width: 0 }}
+                    animate={{ width: `${d.pct}%` }}
+                    transition={reduceMotion ? { duration: 0 } : { duration: 0.8 }}
+                  />
                 </div>
                 <span className="text-sm font-medium w-10 text-right">{d.pct}%</span>
               </div>
             ))}
+
+            <div className="pt-2">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium">БЖУ по неделе</p>
+                <p className="text-xs text-muted-foreground">г/день</p>
+              </div>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={weekData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 90%)" />
+                  <XAxis dataKey="day" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="protein" stroke="hsl(210 80% 55%)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="fat" stroke="hsl(38 92% 55%)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="carbs" stroke="hsl(152 68% 45%)" strokeWidth={2} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
