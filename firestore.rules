@@ -15,7 +15,7 @@ service cloud.firestore {
 
     function isBlocked() {
       return signedIn()
-        && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).exists()
+        && exists(/databases/$(database)/documents/profiles/$(request.auth.uid))
         && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.is_blocked == true;
     }
 
