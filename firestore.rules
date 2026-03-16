@@ -13,6 +13,12 @@ service cloud.firestore {
       return signedIn() && field == request.auth.uid;
     }
 
+    function isBlocked() {
+      return signedIn()
+        && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).exists()
+        && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.is_blocked == true;
+    }
+
     // Public catalogs
     match /product_categories/{id} {
       allow read: if true;
@@ -20,35 +26,33 @@ service cloud.firestore {
     }
 
     match /products/{id} {
-      allow read: if resource.data.is_approved == true || isAdmin() || (signedIn() && resource.data.added_by == request.auth.uid);
+      allow read: if !isBlocked() && (resource.data.is_approved == true || isAdmin() || (signedIn() && resource.data.added_by == request.auth.uid));
 
-      allow create: if signedIn()
-        && request.resource.data.added_by == request.auth.uid
-        && request.resource.data.is_approved == false;
+      allow create: if isAdmin();
 
       allow update, delete: if isAdmin();
     }
 
     // Profiles
     match /profiles/{uid} {
-      allow read: if signedIn() || isAdmin();
+      allow read: if isAdmin() || (signedIn() && uid == request.auth.uid);
       allow create: if signedIn() && uid == request.auth.uid;
-      allow update: if isAdmin() || (signedIn() && uid == request.auth.uid);
+      allow update: if isAdmin() || (!isBlocked() && signedIn() && uid == request.auth.uid);
       allow delete: if isAdmin();
     }
 
     // Diary
     match /food_diary/{id} {
-      allow read: if signedIn() && resource.data.user_id == request.auth.uid;
-      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
-      allow update, delete: if signedIn() && resource.data.user_id == request.auth.uid;
+      allow read: if !isBlocked() && signedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if isAdmin();
+      allow update, delete: if !isBlocked() && signedIn() && resource.data.user_id == request.auth.uid;
     }
 
     // Daily stats
     match /daily_stats/{id} {
-      allow read: if signedIn() && resource.data.user_id == request.auth.uid;
-      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
-      allow update: if signedIn() && resource.data.user_id == request.auth.uid;
+      allow read: if !isBlocked() && signedIn() && resource.data.user_id == request.auth.uid;
+      allow create: if !isBlocked() && signedIn() && request.resource.data.user_id == request.auth.uid;
+      allow update: if !isBlocked() && signedIn() && resource.data.user_id == request.auth.uid;
       allow delete: if isAdmin();
     }
 
@@ -59,14 +63,20 @@ service cloud.firestore {
     }
 
     match /user_achievements/{id} {
-      allow read: if isAdmin() || (signedIn() && resource.data.user_id == request.auth.uid);
-      allow create: if isAdmin() || (signedIn() && request.resource.data.user_id == request.auth.uid);
+      allow read: if isAdmin() || (!isBlocked() && signedIn() && resource.data.user_id == request.auth.uid);
+      allow create: if isAdmin() || (!isBlocked() && signedIn() && request.resource.data.user_id == request.auth.uid);
       allow update, delete: if isAdmin();
     }
 
     match /user_roles/{uid} {
       allow read: if isAdmin() || (signedIn() && uid == request.auth.uid);
       allow write: if isAdmin();
+    }
+
+    match /activity_events/{id} {
+      allow read: if isAdmin();
+      allow create: if !isBlocked() && signedIn() && request.resource.data.user_id == request.auth.uid;
+      allow update, delete: if isAdmin();
     }
 
     match /meta/{id} {

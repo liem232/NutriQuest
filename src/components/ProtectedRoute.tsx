@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, profile, loading, signOut } = useAuth();
 
   if (loading) {
     return (
@@ -14,11 +14,16 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   }
 
   if (!user) return <Navigate to="/" replace />;
+
+  if (profile?.is_blocked) {
+    void signOut();
+    return <Navigate to="/" replace />;
+  }
   return <>{children}</>;
 }
 
 export function AdminRoute({ children }: { children: ReactNode }) {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, profile, isAdmin, loading, signOut } = useAuth();
 
   if (loading) {
     return (
@@ -29,6 +34,10 @@ export function AdminRoute({ children }: { children: ReactNode }) {
   }
 
   if (!user) return <Navigate to="/" replace />;
+  if (profile?.is_blocked) {
+    void signOut();
+    return <Navigate to="/" replace />;
+  }
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }

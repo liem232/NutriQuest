@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { PageBanner } from "@/components/PageBanner";
 import { renderIcon } from "@/lib/icons";
+import { logActivityEvent } from "@/lib/activity";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "@/integrations/firebase/client";
 import {
   addDoc,
   collection,
@@ -53,7 +56,7 @@ const CATEGORY_ICON_FALLBACK: Record<string, string> = {
 
 const Products = () => {
   const reduceMotion = useReducedMotion();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState("all");
@@ -68,6 +71,7 @@ const Products = () => {
     (async () => {
       try {
         if (!import.meta.env.DEV) return;
+        if (!isAdmin) return;
         const seededFlag = localStorage.getItem("seeded_products_v1");
         if (seededFlag) return;
 
@@ -159,7 +163,7 @@ const Products = () => {
         // ignore
       }
     })();
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     const catsQ = query(collection(db, "product_categories"), orderBy("sort_order"));
@@ -213,16 +217,20 @@ const Products = () => {
   const handleAddProduct = async () => {
     if (!user || !newProduct.name || !newProduct.calories) return;
     try {
-      await addDoc(collection(db, "products"), {
+      const fn = httpsCallable(functions, "submitProductForModeration");
+      await fn({
         name: newProduct.name,
         calories_per_100g: parseFloat(newProduct.calories),
         protein_per_100g: parseFloat(newProduct.protein || "0"),
         fat_per_100g: parseFloat(newProduct.fat || "0"),
         carbs_per_100g: parseFloat(newProduct.carbs || "0"),
         category_id: newProduct.category_id || null,
-        added_by: user.uid,
-        is_approved: false,
-        created_at: serverTimestamp(),
+      } as any);
+
+      await logActivityEvent({
+        userId: user.uid,
+        type: "product_submit",
+        payload: { name: newProduct.name, category_id: newProduct.category_id || null },
       });
 
       toast({ title: "Продукт отправлен на модерацию!" });

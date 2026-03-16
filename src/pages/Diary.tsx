@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +12,6 @@ import { checkAndUpdateStreak } from "@/lib/gamification";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { PageBanner } from "@/components/PageBanner";
 import {
-  addDoc,
-  collection,
   deleteDoc,
   doc,
   getDoc,
@@ -27,6 +25,9 @@ import {
 } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
 import { renderIcon } from "@/lib/icons";
+import { logActivityEvent } from "@/lib/activity";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "@/integrations/firebase/client";
 
 type DiaryEntry = {
   id: string;
@@ -50,6 +51,7 @@ const mealLabels: Record<string, { label: string; icon: string }> = {
 const Diary = () => {
   const { user, profile } = useAuth();
   const { toast } = useToast();
+  const reduceMotion = useReducedMotion();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [searchQ, setSearchQ] = useState("");
@@ -154,8 +156,8 @@ const Diary = () => {
         return;
       }
       const p: any = productSnap.data();
-      await addDoc(collection(db, "food_diary"), {
-        user_id: user.uid,
+      const fn = httpsCallable(functions, "addDiaryEntry");
+      await fn({
         product_id: productId,
         meal: currentMeal,
         grams: 100,
@@ -167,6 +169,12 @@ const Diary = () => {
           fat_per_100g: p.fat_per_100g ?? 0,
           carbs_per_100g: p.carbs_per_100g ?? 0,
         },
+      } as any);
+
+      await logActivityEvent({
+        userId: user.uid,
+        type: "diary_add",
+        payload: { product_id: productId, meal: currentMeal, grams: 100, date: selectedDate },
       });
     } catch (e: any) {
       toast({ variant: "destructive", title: "Ошибка", description: e?.message ?? "Ошибка" });
@@ -207,8 +215,8 @@ const Diary = () => {
       for (const item of tpl.items) {
         const p = approvedProducts.find((x) => String(x.name ?? "").toLowerCase() === item.name.toLowerCase());
         if (!p) continue;
-        await addDoc(collection(db, "food_diary"), {
-          user_id: user.uid,
+        const fn = httpsCallable(functions, "addDiaryEntry");
+        await fn({
           product_id: p.id,
           meal: currentMeal,
           grams: item.grams,
@@ -220,8 +228,14 @@ const Diary = () => {
             fat_per_100g: p.fat_per_100g ?? 0,
             carbs_per_100g: p.carbs_per_100g ?? 0,
           },
-        });
+        } as any);
       }
+
+      await logActivityEvent({
+        userId: user.uid,
+        type: "diary_add_template",
+        payload: { template: tpl.title, meal: currentMeal, date: selectedDate },
+      });
     } catch (e: any) {
       toast({ variant: "destructive", title: "Ошибка", description: e?.message ?? "Ошибка" });
       return;
@@ -261,6 +275,18 @@ const Diary = () => {
   const goal = profile?.daily_calories ?? 2200;
   const pct = Math.min(100, Math.round((totalCal / goal) * 100));
 
+  const goalP = profile?.protein_goal ?? 0;
+  const goalF = profile?.fat_goal ?? 0;
+  const goalC = profile?.carbs_goal ?? 0;
+
+  const calDiff = totalCal - goal;
+  const pDiff = totalP - goalP;
+  const fDiff = totalF - goalF;
+  const cDiff = totalC - goalC;
+
+  const diffLabel = (diff: number) => (diff >= 0 ? `+${diff}` : `${diff}`);
+  const diffTone = (diff: number) => (diff > 0 ? "text-amber-600" : diff < 0 ? "text-sky-600" : "text-emerald-600");
+
   const bju = [
     { name: "Б", value: totalP || 1, color: "hsl(210 80% 55%)" },
     { name: "Ж", value: totalF || 1, color: "hsl(38 92% 55%)" },
@@ -268,7 +294,7 @@ const Diary = () => {
   ];
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-36 md:pb-24">
+    <motion.div initial={reduceMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-36 md:pb-24">
       <PageBanner
         eyebrow="Дневник"
         title="Заполняй день красиво"
@@ -287,10 +313,34 @@ const Diary = () => {
       <Carousel opts={{ align: "start" }} className="relative">
         <CarouselContent>
           {[
-            { title: "Ккал", value: `${totalCal}`, meta: `из ${goal}`, icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-foreground" }) },
-            { title: "Белки", value: `${totalP}г`, meta: `цель ${profile?.protein_goal ?? 0}г`, icon: renderIcon("solar:bone-bold-duotone", { className: "text-[20px] text-foreground" }) },
-            { title: "Жиры", value: `${totalF}г`, meta: `цель ${profile?.fat_goal ?? 0}г`, icon: renderIcon("solar:drop-bold-duotone", { className: "text-[20px] text-foreground" }) },
-            { title: "Углеводы", value: `${totalC}г`, meta: `цель ${profile?.carbs_goal ?? 0}г`, icon: renderIcon("solar:wheat-bold-duotone", { className: "text-[20px] text-foreground" }) },
+            {
+              title: "Ккал",
+              value: `${totalCal}`,
+              meta: `из ${goal} • ${calDiff === 0 ? "ровно" : calDiff > 0 ? `перебор ${diffLabel(calDiff)}` : `недобор ${diffLabel(calDiff)}`}`,
+              icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-foreground" }),
+              diff: calDiff,
+            },
+            {
+              title: "Белки",
+              value: `${totalP}г`,
+              meta: `цель ${goalP}г • ${pDiff === 0 ? "ровно" : pDiff > 0 ? `перебор ${diffLabel(pDiff)}г` : `недобор ${diffLabel(pDiff)}г`}`,
+              icon: renderIcon("solar:bone-bold-duotone", { className: "text-[20px] text-foreground" }),
+              diff: pDiff,
+            },
+            {
+              title: "Жиры",
+              value: `${totalF}г`,
+              meta: `цель ${goalF}г • ${fDiff === 0 ? "ровно" : fDiff > 0 ? `перебор ${diffLabel(fDiff)}г` : `недобор ${diffLabel(fDiff)}г`}`,
+              icon: renderIcon("solar:drop-bold-duotone", { className: "text-[20px] text-foreground" }),
+              diff: fDiff,
+            },
+            {
+              title: "Углеводы",
+              value: `${totalC}г`,
+              meta: `цель ${goalC}г • ${cDiff === 0 ? "ровно" : cDiff > 0 ? `перебор ${diffLabel(cDiff)}г` : `недобор ${diffLabel(cDiff)}г`}`,
+              icon: renderIcon("solar:wheat-bold-duotone", { className: "text-[20px] text-foreground" }),
+              diff: cDiff,
+            },
           ].map((s) => (
             <CarouselItem key={s.title} className="basis-1/2 sm:basis-1/3">
               <Card className="card-hover overflow-hidden">
@@ -301,7 +351,7 @@ const Diary = () => {
                       <div>
                         <p className="text-xs text-muted-foreground">{s.title}</p>
                         <p className="mt-2 text-xl font-display font-bold">{s.value}</p>
-                        <p className="mt-1 text-xs text-muted-foreground">{s.meta}</p>
+                        <p className={`mt-1 text-xs ${diffTone((s as any).diff ?? 0)}`}>{s.meta}</p>
                       </div>
                       <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
                         {s.icon}
@@ -314,6 +364,35 @@ const Diary = () => {
           ))}
         </CarouselContent>
       </Carousel>
+
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        {Object.entries(mealLabels).map(([key, meta]) => {
+          const list = entries.filter((e) => e.meal === key);
+          const cal = list.reduce((s, e) => s + Math.round((e.grams / 100) * e.cal_per_100), 0);
+          const p = list.reduce((s, e) => s + Math.round((e.grams / 100) * e.p_per_100), 0);
+          const f = list.reduce((s, e) => s + Math.round((e.grams / 100) * e.f_per_100), 0);
+          const c = list.reduce((s, e) => s + Math.round((e.grams / 100) * e.c_per_100), 0);
+          return (
+            <Card key={key} className="card-hover overflow-hidden">
+              <CardContent className="p-4 relative">
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-accent/10" />
+                <div className="relative">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">{meta.label}</p>
+                      <p className="mt-2 text-lg font-display font-bold truncate">{cal} ккал</p>
+                      <p className="mt-1 text-xs text-muted-foreground truncate">{p}Б {f}Ж {c}У</p>
+                    </div>
+                    <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
+                      {renderIcon(meta.icon, { className: "text-[20px] text-foreground" })}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
 
       <Tabs defaultValue="breakfast" onValueChange={setCurrentMeal}>
         <TabsList className="relative grid grid-cols-4 w-full p-1 rounded-2xl bg-card/40 border border-border/60 backdrop-blur">
@@ -357,7 +436,13 @@ const Diary = () => {
         {Object.keys(mealLabels).map((meal) => (
           <TabsContent key={meal} value={meal} className="space-y-3 mt-4">
             {entries.filter(e => e.meal === meal).map((entry) => (
-              <motion.div key={entry.id} layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
+              <motion.div
+                key={entry.id}
+                layout={!reduceMotion}
+                initial={reduceMotion ? false : { opacity: 0, x: -10 }}
+                animate={reduceMotion ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                transition={reduceMotion ? { duration: 0 } : { duration: 0.18 }}
+              >
                 <Card className="card-hover">
                   <CardContent className="p-4 flex items-center gap-4">
                     <div className="flex-1">
@@ -445,7 +530,12 @@ const Diary = () => {
           <div className="flex-1">
             <p className="text-2xl font-display font-bold">{totalCal} <span className="text-base text-muted-foreground font-normal">/ {goal} ккал</span></p>
             <div className="relative h-3 rounded-full bg-muted overflow-hidden mt-2">
-              <motion.div className="absolute inset-y-0 left-0 rounded-full gradient-primary" initial={{ width: 0 }} animate={{ width: `${Math.min(100, Math.round((totalCal / goal) * 100))}%` }} transition={{ duration: 0.8 }} />
+              <motion.div
+                className="absolute inset-y-0 left-0 rounded-full gradient-primary"
+                initial={reduceMotion ? false : { width: 0 }}
+                animate={{ width: `${Math.min(100, Math.round((totalCal / goal) * 100))}%` }}
+                transition={reduceMotion ? { duration: 0 } : { duration: 0.8 }}
+              />
             </div>
             <p className="text-sm text-muted-foreground mt-1">{Math.round((totalCal / goal) * 100)}% от нормы</p>
           </div>

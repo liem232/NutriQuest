@@ -25,7 +25,9 @@ import {
   increment,
   where,
 } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import { db } from "@/integrations/firebase/client";
+import { functions } from "@/integrations/firebase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { renderIcon } from "@/lib/icons";
 
@@ -288,8 +290,23 @@ const Admin = () => {
 
   const toggleBlock = async (userId: string, isBlocked: boolean) => {
     try {
-      await updateDoc(doc(db, "profiles", userId), { is_blocked: !isBlocked } as any);
+      const fn = httpsCallable(functions, "adminToggleBlockUser");
+      await fn({ uid: userId, isBlocked: !isBlocked } as any);
       toast({ title: isBlocked ? "Пользователь разблокирован" : "Пользователь заблокирован" });
+      fetchData();
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Ошибка", description: e?.message ?? "Ошибка" });
+    }
+  };
+
+  const deleteUser = async (uid: string) => {
+    if (!uid) return;
+    const ok = window.confirm("Удалить аккаунт пользователя? Это удалит данные и доступ к системе.");
+    if (!ok) return;
+    try {
+      const fn = httpsCallable(functions, "adminDeleteUser");
+      await fn({ uid } as any);
+      toast({ title: "Готово", description: "Пользователь удалён." });
       fetchData();
     } catch (e: any) {
       toast({ variant: "destructive", title: "Ошибка", description: e?.message ?? "Ошибка" });
@@ -505,6 +522,16 @@ const Admin = () => {
                         ? <span className="mr-1">{renderIcon("solar:check-circle-bold-duotone", { className: "text-[14px]" })}</span>
                         : <span className="mr-1">{renderIcon("solar:ban-bold-duotone", { className: "text-[14px]" })}</span>}
                       {(u as any).is_blocked ? "Разблок." : "Блок."}
+                    </Button>
+
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => deleteUser(String(u.user_id))}
+                    >
+                      <span className="mr-1">{renderIcon("solar:trash-bin-trash-bold-duotone", { className: "text-[14px]" })}</span>
+                      Удалить
                     </Button>
 
                     <Button
