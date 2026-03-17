@@ -44,11 +44,16 @@ type Category = {
 };
 
 const CATEGORY_ICON_FALLBACK: Record<string, string> = {
-  meat: "solar:chef-hat-heart-bold-duotone",
-  dairy: "solar:cup-hot-bold-duotone",
-  grains: "solar:wheat-bold-duotone",
-  fruits: "solar:apple-bold-duotone",
-  vegetables: "solar:leaf-bold-duotone",
+  meat: "mdi:food-drumstick",
+  fish: "mdi:fish",
+  seafood: "mdi:fish",
+  dairy: "mdi:cup",
+  eggs: "mdi:egg",
+  grains: "mdi:grain",
+  bread: "mdi:bread-slice",
+  bakery: "mdi:bread-slice",
+  fruits: "mdi:food-apple",
+  vegetables: "mdi:broccoli",
 };
 
 const Products = () => {
@@ -80,11 +85,14 @@ const Products = () => {
 
         const batch = writeBatch(db);
         const cats = [
-          { id: "meat", name: "Мясо", icon: "🥩", sort_order: 10 },
-          { id: "dairy", name: "Молочные", icon: "🥛", sort_order: 20 },
-          { id: "grains", name: "Крупы", icon: "🌾", sort_order: 30 },
-          { id: "fruits", name: "Фрукты", icon: "🍎", sort_order: 40 },
-          { id: "vegetables", name: "Овощи", icon: "🥦", sort_order: 50 },
+          { id: "meat", name: "Мясо", icon: CATEGORY_ICON_FALLBACK.meat, sort_order: 10 },
+          { id: "fish", name: "Рыба и морепродукты", icon: CATEGORY_ICON_FALLBACK.fish, sort_order: 15 },
+          { id: "dairy", name: "Молочные", icon: CATEGORY_ICON_FALLBACK.dairy, sort_order: 20 },
+          { id: "eggs", name: "Яйца", icon: CATEGORY_ICON_FALLBACK.eggs, sort_order: 25 },
+          { id: "grains", name: "Крупы и каши", icon: CATEGORY_ICON_FALLBACK.grains, sort_order: 30 },
+          { id: "bread", name: "Хлеб и выпечка", icon: CATEGORY_ICON_FALLBACK.bread, sort_order: 35 },
+          { id: "fruits", name: "Фрукты", icon: CATEGORY_ICON_FALLBACK.fruits, sort_order: 40 },
+          { id: "vegetables", name: "Овощи", icon: CATEGORY_ICON_FALLBACK.vegetables, sort_order: 50 },
         ];
         cats.forEach((c) => {
           batch.set(doc(db, "product_categories", c.id), {
@@ -208,7 +216,12 @@ const Products = () => {
       p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const categoryIcon = (cat: Category) => cat.icon ?? CATEGORY_ICON_FALLBACK[cat.id] ?? "solar:tag-bold-duotone";
+  const categoryIcon = (cat: Category) => {
+    const v = String(cat.icon ?? "").trim();
+    const looksLikeIconify = v.includes(":");
+    if (looksLikeIconify) return v;
+    return CATEGORY_ICON_FALLBACK[cat.id] ?? "solar:tag-bold-duotone";
+  };
 
   const handleAddProduct = async () => {
     if (!user || !newProduct.name || !newProduct.calories) return;
