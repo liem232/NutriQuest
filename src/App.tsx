@@ -8,6 +8,7 @@ import { ProtectedRoute, AdminRoute } from "@/components/ProtectedRoute";
 import { ThemeProvider } from "@/components/theme-provider";
 import Landing from "./pages/Landing";
 import ResetPassword from "./pages/ResetPassword";
+import Blocked from "./pages/Blocked";
 import Dashboard from "./pages/Dashboard";
 import Diary from "./pages/Diary";
 import Products from "./pages/Products";
@@ -30,6 +31,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/blocked" element={<Blocked />} />
               <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/diary" element={<Diary />} />

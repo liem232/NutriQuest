@@ -91,6 +91,7 @@ const Landing = () => {
 
   const validatePassword = (pw: string) => {
     if (pw.length < 8) return "Минимум 8 символов";
+    if (pw.length > 64) return "Максимум 64 символа";
     if (!/[A-ZА-Я]/.test(pw)) return "Нужна заглавная буква";
     if (!/\d/.test(pw)) return "Нужна цифра";
     return null;
@@ -137,6 +138,7 @@ const Landing = () => {
 
   const validateEmail = (email: string) => {
     if (!email) return "Введите email";
+    if (email.length > 100) return "Максимум 100 символов";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Некорректный формат email";
     return null;
   };
