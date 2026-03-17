@@ -17,6 +17,7 @@ import {
   collection,
   doc,
   getCountFromServer,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -226,6 +227,24 @@ const Products = () => {
   const handleAddProduct = async () => {
     if (!user || !newProduct.name || !newProduct.calories) return;
     try {
+      // Check limit: max 3 products per day for moderation
+      const today = new Date().toISOString().slice(0, 10);
+      const userProductsQ = query(
+        collection(db, "products"),
+        where("added_by", "==", user.uid),
+        where("is_approved", "==", false)
+      );
+      const userProductsSnap = await getDocs(userProductsQ);
+      const todayCount = userProductsSnap.docs.filter(d => {
+        const created = d.data().created_at?.toDate?.() || new Date(d.data().created_at);
+        return created?.toISOString?.().slice(0, 10) === today;
+      }).length;
+      
+      if (todayCount >= 3) {
+        toast({ variant: "destructive", title: "Лимит достигнут", description: "Максимум 3 продукта на модерацию в день. Попробуйте завтра." });
+        return;
+      }
+
       await addDoc(collection(db, "products"), {
         name: newProduct.name,
         calories_per_100g: parseFloat(newProduct.calories),
