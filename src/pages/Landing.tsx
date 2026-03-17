@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,22 @@ import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db } from "@/integrations/firebase/client";
 import { calculateDailyCalories } from "@/lib/calculateDailyCalories";
 
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes scroll-landing {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-scroll-landing {
+    animation: scroll-landing 25s linear infinite;
+    width: fit-content;
+  }
+`;
+if (!document.head.querySelector('style[data-landing-scroll]')) {
+  style.setAttribute('data-landing-scroll', 'true');
+  document.head.appendChild(style);
+}
+
 const activityLabels: Record<string, string> = {
   sedentary: "Сидячий образ жизни",
   light: "Лёгкая активность",
@@ -37,6 +53,10 @@ const Landing = () => {
   const [loading, setLoading] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [showForgot, setShowForgot] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
+
+  // Ref for scrolling to form
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Login form
   const [loginEmail, setLoginEmail] = useState("");
@@ -281,62 +301,56 @@ const Landing = () => {
               цели и достижения — всё в одном месте.
             </p>
 
-            <div className="mt-6">
-              <Carousel
-                opts={{ align: "start", loop: true }}
-                className="relative"
-              >
-                <CarouselContent>
-                  {slides.map((s) => (
-                    <CarouselItem key={s.title} className="sm:basis-1/2">
-                      <div className={`glass-surface rounded-3xl p-4 sm:p-5 overflow-hidden relative`}>
-                        <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${s.accent}`} />
-                        <div className="relative">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <div className="inline-flex items-center gap-2 rounded-full bg-card/60 backdrop-blur border border-border/60 px-2.5 py-1 text-[11px] text-muted-foreground">
-                                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                {s.badge}
-                              </div>
-                              <p className="mt-3 text-base font-display font-semibold leading-tight">
-                                {s.title}
-                              </p>
-                              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                                {s.desc}
-                              </p>
+            <div className="mt-6 relative overflow-hidden">
+              <div className="flex gap-4 animate-scroll-landing">
+                {[...slides, ...slides].map((s, i) => (
+                  <div key={`${s.title}-${i}`} className="flex-none w-full sm:w-1/2 px-1">
+                    <div className={`glass-surface rounded-3xl p-4 sm:p-5 overflow-hidden relative`}>
+                      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${s.accent}`} />
+                      <div className="relative">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="inline-flex items-center gap-2 rounded-full bg-card/60 backdrop-blur border border-border/60 px-2.5 py-1 text-[11px] text-muted-foreground">
+                              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                              {s.badge}
                             </div>
-                            <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
-                              {s.icon}
-                            </div>
+                            <p className="mt-3 text-base font-display font-semibold leading-tight">
+                              {s.title}
+                            </p>
+                            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                              {s.desc}
+                            </p>
                           </div>
-
-                          <div className="mt-4 flex items-center gap-2">
-                            <div className="h-2 flex-1 rounded-full bg-muted/60 overflow-hidden">
-                              <div className="h-full w-2/3 gradient-primary rounded-full" />
-                            </div>
-                            <span className="text-xs text-muted-foreground">живой UI</span>
+                          <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
+                            {s.icon}
                           </div>
                         </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
 
-                <CarouselPrevious className="hidden lg:flex -left-10 bg-card/70 border-border/60 backdrop-blur" />
-                <CarouselNext className="hidden lg:flex -right-10 bg-card/70 border-border/60 backdrop-blur" />
-              </Carousel>
+                        <div className="mt-4 flex items-center gap-2">
+                          <div className="h-2 flex-1 rounded-full bg-muted/60 overflow-hidden">
+                            <div className="h-full w-2/3 gradient-primary rounded-full" />
+                          </div>
+                          <span className="text-xs text-muted-foreground">живой UI</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-              <Button variant="hero" className="h-11 px-6" onClick={() => setShowForgot(false)}>
+              <Button variant="hero" className="h-11 px-6" onClick={() => { setActiveTab("login"); setShowForgot(false); formRef.current?.scrollIntoView({ behavior: "smooth" }); }}>
                 Начать сейчас
               </Button>
               <Button
                 variant="outline"
                 className="h-11 px-6 bg-card/60 backdrop-blur border-border/60"
                 onClick={() => {
+                  setActiveTab("register");
                   setShowForgot(false);
                   setRegStep(1);
+                  formRef.current?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
                 Создать аккаунт
@@ -344,7 +358,7 @@ const Landing = () => {
             </div>
           </div>
 
-          <div className="min-w-0 flex justify-center lg:justify-end">
+          <div ref={formRef} className="min-w-0 flex justify-center lg:justify-end">
             <div className="w-full max-w-md glass-surface elevated rounded-3xl p-5 sm:p-6">
               <div className="flex items-center gap-3 mb-5">
                 <div className="h-10 w-10 rounded-2xl gradient-primary flex items-center justify-center shadow-sm">
@@ -356,7 +370,7 @@ const Landing = () => {
                 </div>
               </div>
 
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="login">Вход</TabsTrigger>
               <TabsTrigger value="register" onClick={() => setRegStep(1)}>Регистрация</TabsTrigger>
