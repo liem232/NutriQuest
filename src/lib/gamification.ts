@@ -187,7 +187,7 @@ export function getRecommendations(
 
   if (todayProtein < profile.protein_goal * 0.5) {
     recs.push({
-      icon: "🥩",
+      icon: "solar:drumstick-bold-duotone",
       title: "Больше белка",
       desc: "Вы не добрали по белку. Добавьте продукты с высоким содержанием белка.",
       products: ["Куриная грудка", "Творог 5%", "Яйцо куриное", "Тунец", "Индейка филе"],
@@ -196,7 +196,7 @@ export function getRecommendations(
 
   if (todayCarbs < profile.carbs_goal * 0.4) {
     recs.push({
-      icon: "🌾",
+      icon: "solar:baguette-bold-duotone",
       title: "Сложные углеводы",
       desc: "Добавьте полезные источники углеводов для энергии.",
       products: ["Гречка", "Овсянка", "Рис бурый", "Киноа", "Хлеб цельнозерновой"],
@@ -205,7 +205,7 @@ export function getRecommendations(
 
   if (todayFat < profile.fat_goal * 0.4) {
     recs.push({
-      icon: "🥑",
+      icon: "solar:chef-hat-bold-duotone",
       title: "Полезные жиры",
       desc: "Не забывайте о жирах — они важны для гормонального баланса.",
       products: ["Авокадо", "Лосось", "Орехи", "Оливковое масло"],
@@ -214,7 +214,7 @@ export function getRecommendations(
 
   const waterLiters = Math.round(Number(profile.weight) * 0.033 * 10) / 10;
   recs.push({
-    icon: "💧",
+    icon: "solar:cup-hot-bold-duotone",
     title: "Пейте воду",
     desc: `Ваша норма воды: ${waterLiters} л в день при весе ${profile.weight} кг.`,
     products: [],
@@ -224,7 +224,7 @@ export function getRecommendations(
     const hoursSince = (Date.now() - lastMealTime.getTime()) / 3600000;
     if (hoursSince > 4) {
       recs.push({
-        icon: "🍎",
+        icon: "solar:apple-pie-bold-duotone",
         title: "Пора перекусить",
         desc: `Последний приём пищи был ${Math.round(hoursSince)} часов назад. Не голодайте!`,
         products: ["Яблоко", "Йогурт натуральный", "Банан", "Орехи"],

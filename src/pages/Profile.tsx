@@ -122,14 +122,14 @@ const Profile = () => {
         </div>
       </div>
 
-      <Card className="card-hover">
+      <Card>
         <CardContent className="p-6 flex items-center gap-6">
           <Avatar className="h-20 w-20">
             <AvatarFallback className="text-2xl bg-primary/10 text-primary font-display">{initials}</AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-xl font-display font-bold">{profile.display_name}</h2>
-            <p className="text-sm text-accent font-medium">⭐ {profile.title} • {profile.xp} XP</p>
+            <p className="text-sm text-accent font-medium flex items-center gap-1">{renderIcon("solar:star-bold-duotone", { className: "text-[14px]" })} {profile.title} • {profile.xp} XP</p>
           </div>
         </CardContent>
       </Card>
@@ -143,7 +143,7 @@ const Profile = () => {
             { icon: renderIcon("solar:cup-star-bold-duotone", { className: "text-[20px] text-accent" }), value: achievementCount.toString(), label: "Достижений" },
           ].map((s, i) => (
             <CarouselItem key={i} className="basis-1/2 sm:basis-1/3">
-              <Card className="card-hover">
+              <Card>
                 <CardContent className="p-4 text-center">
                   <div className="flex justify-center mb-2">{s.icon}</div>
                   <p className="text-2xl font-display font-bold">{s.value}</p>

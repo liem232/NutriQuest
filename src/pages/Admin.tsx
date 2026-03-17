@@ -40,7 +40,7 @@ const Admin = () => {
   const [searchProducts, setSearchProducts] = useState("");
   const [achievements, setAchievements] = useState<any[]>([]);
   const [stats, setStats] = useState({ users: 0, products: 0, achievements: 0, blocked: 0 });
-  const [newAch, setNewAch] = useState({ name: "", description: "", icon: "🏆", image_url: "", condition_type: "total_days", condition_value: "1", xp_reward: "50" });
+  const [newAch, setNewAch] = useState({ name: "", description: "", icon: "solar:trophy-bold-duotone", image_url: "", condition_type: "total_days", condition_value: "1", xp_reward: "50" });
   const [achDialogOpen, setAchDialogOpen] = useState(false);
   const [titleFilter, setTitleFilter] = useState("all");
 
@@ -88,18 +88,18 @@ const Admin = () => {
 
   const seedAchievements = async () => {
     const seeds = [
-      { name: "Первый шаг", description: "Заполни дневник впервые", icon: "👣", condition_type: "total_days", condition_value: 1, xp_reward: 30 },
-      { name: "Неделя в деле", description: "7 дней подряд", icon: "🔥", condition_type: "streak", condition_value: 7, xp_reward: 150 },
-      { name: "Две недели", description: "14 дней подряд", icon: "⚡", condition_type: "streak", condition_value: 14, xp_reward: 300 },
-      { name: "Месяц дисциплины", description: "30 дней подряд", icon: "🏅", condition_type: "streak", condition_value: 30, xp_reward: 800 },
-      { name: "Сотка", description: "100 дней всего", icon: "💯", condition_type: "total_days", condition_value: 100, xp_reward: 1200 },
-      { name: "Легендарный год", description: "365 дней всего", icon: "🏆", condition_type: "total_days", condition_value: 365, xp_reward: 5000 },
+      { name: "Первый шаг", description: "Заполни дневник впервые", icon: "solar:footprints-bold-duotone", condition_type: "total_days", condition_value: 1, xp_reward: 30 },
+      { name: "Неделя в деле", description: "7 дней подряд", icon: "solar:fire-bold-duotone", condition_type: "streak", condition_value: 7, xp_reward: 150 },
+      { name: "Две недели", description: "14 дней подряд", icon: "solar:bolt-bold-duotone", condition_type: "streak", condition_value: 14, xp_reward: 300 },
+      { name: "Месяц дисциплины", description: "30 дней подряд", icon: "solar:medal-ribbon-bold-duotone", condition_type: "streak", condition_value: 30, xp_reward: 800 },
+      { name: "Сотка", description: "100 дней всего", icon: "solar:medal-bold-duotone", condition_type: "total_days", condition_value: 100, xp_reward: 1200 },
+      { name: "Легендарный год", description: "365 дней всего", icon: "solar:trophy-bold-duotone", condition_type: "total_days", condition_value: 365, xp_reward: 5000 },
 
-      { name: "Белковый режим", description: "Попади в цель по белку 3 раза", icon: "🥩", condition_type: "perfect_bju", condition_value: 3, xp_reward: 220 },
-      { name: "Балансир", description: "Идеальный БЖУ 10 раз", icon: "⚖️", condition_type: "perfect_bju", condition_value: 10, xp_reward: 700 },
-      { name: "Коллекционер", description: "Добавь 3 продукта", icon: "🧺", condition_type: "products_added", condition_value: 3, xp_reward: 120 },
-      { name: "Шеф-повар", description: "Добавь 10 продуктов", icon: "👨‍🍳", condition_type: "products_added", condition_value: 10, xp_reward: 450 },
-      { name: "Лаборатория вкуса", description: "Добавь 25 продуктов", icon: "🧪", condition_type: "products_added", condition_value: 25, xp_reward: 1200 },
+      { name: "Белковый режим", description: "Попади в цель по белку 3 раза", icon: "solar:bone-bold-duotone", condition_type: "perfect_bju", condition_value: 3, xp_reward: 220 },
+      { name: "Балансир", description: "Идеальный БЖУ 10 раз", icon: "solar:scale-bold-duotone", condition_type: "perfect_bju", condition_value: 10, xp_reward: 700 },
+      { name: "Коллекционер", description: "Добавь 3 продукта", icon: "solar:box-minimalistic-bold-duotone", condition_type: "products_added", condition_value: 3, xp_reward: 120 },
+      { name: "Шеф-повар", description: "Добавь 10 продуктов", icon: "solar:chef-hat-bold-duotone", condition_type: "products_added", condition_value: 10, xp_reward: 450 },
+      { name: "Лаборатория вкуса", description: "Добавь 25 продуктов", icon: "solar:test-tube-bold-duotone", condition_type: "products_added", condition_value: 25, xp_reward: 1200 },
     ];
 
     let existingNames = new Set<string>();
@@ -310,7 +310,7 @@ const Admin = () => {
       } as any);
       toast({ title: "Достижение создано!" });
       setAchDialogOpen(false);
-      setNewAch({ name: "", description: "", icon: "🏆", image_url: "", condition_type: "total_days", condition_value: "1", xp_reward: "50" });
+      setNewAch({ name: "", description: "", icon: "solar:trophy-bold-duotone", image_url: "", condition_type: "total_days", condition_value: "1", xp_reward: "50" });
       fetchData();
     } catch (e: any) {
       toast({ variant: "destructive", title: "Ошибка", description: e?.message ?? "Ошибка" });
@@ -424,7 +424,7 @@ const Admin = () => {
           { icon: renderIcon("solar:medal-ribbon-star-bold-duotone", { className: "text-[20px]" }), label: "Достижений", value: stats.achievements },
           { icon: renderIcon("solar:ban-bold-duotone", { className: "text-[20px]" }), label: "Заблокировано", value: stats.blocked },
         ].map((s, i) => (
-          <Card key={i} className="card-hover overflow-hidden">
+          <Card key={i} className="overflow-hidden">
             <CardContent className="p-4 relative">
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-accent/10" />
               <div className="relative flex items-center justify-between gap-3">
@@ -472,19 +472,20 @@ const Admin = () => {
           </div>
           <div className="space-y-2">
             {filteredUsers.map((u) => (
-              <Card key={u.user_id} className={`card-hover ${(u as any).is_blocked ? "opacity-60" : ""}`}>
+              <Card key={u.user_id} className={`${(u as any).is_blocked ? "opacity-60" : ""}`}>
                 <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                   <Avatar className="h-10 w-10">
                     <AvatarFallback className="text-xs bg-primary/10 text-primary">
                       {u.display_name?.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm">{u.display_name}</p>
+                      <span className="text-[10px] text-muted-foreground font-mono">({u.user_id?.slice(0, 8)}...)</span>
                       {(u as any).is_blocked && <Badge variant="destructive" className="text-xs">Заблокирован</Badge>}
                     </div>
-                    <p className="text-xs text-muted-foreground">{u.xp} XP • {u.total_days} дн. • {u.streak_days}🔥</p>
+                    <p className="text-xs text-muted-foreground">{u.xp} XP • {u.total_days} дн. • {u.streak_days}</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                     <Select defaultValue={u.title} onValueChange={(v) => updateTitle(u.user_id, v)}>
@@ -542,7 +543,7 @@ const Admin = () => {
         <TabsContent value="products" className="space-y-4 mt-4">
           {pendingProducts.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">Нет продуктов на модерации</p>}
           {pendingProducts.map((p) => (
-            <Card key={p.id} className="card-hover">
+            <Card key={p.id}>
               <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex-1">
                   <p className="font-medium text-sm">{p.name}</p>
@@ -577,7 +578,7 @@ const Admin = () => {
               .filter((p) => String(p.name ?? "").toLowerCase().includes(searchProducts.toLowerCase()))
               .slice(0, 200)
               .map((p) => (
-                <Card key={p.id} className="card-hover">
+                <Card key={p.id}>
                   <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
@@ -606,72 +607,91 @@ const Admin = () => {
               <Button variant="outline" size="sm" onClick={seedAchievements}>
                 + Набор
               </Button>
-            <Dialog open={achDialogOpen} onOpenChange={setAchDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="hero" size="sm">+ Создать</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader><DialogTitle>Новое достижение</DialogTitle></DialogHeader>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                    <div className="space-y-2 sm:col-span-1">
-                      <Label>Иконка</Label>
-                      <Input value={newAch.icon} onChange={(e) => setNewAch({...newAch, icon: e.target.value})} />
-                    </div>
-                    <div className="space-y-2 sm:col-span-3">
-                      <Label>Название</Label>
-                      <Input value={newAch.name} onChange={(e) => setNewAch({...newAch, name: e.target.value})} />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Картинка (URL)</Label>
-                    <Input value={newAch.image_url} onChange={(e) => setNewAch({...newAch, image_url: e.target.value})} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Описание</Label>
-                    <Input value={newAch.description} onChange={(e) => setNewAch({...newAch, description: e.target.value})} />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="space-y-2">
-                      <Label>Тип</Label>
-                      <Select value={newAch.condition_type} onValueChange={(v) => setNewAch({...newAch, condition_type: v})}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="streak">Серия дней</SelectItem>
-                          <SelectItem value="total_days">Всего дней</SelectItem>
-                          <SelectItem value="products_added">Продуктов</SelectItem>
-                          <SelectItem value="perfect_bju">Идеальный БЖУ</SelectItem>
-                        </SelectContent>
-                      </Select>
+
+              <Dialog open={achDialogOpen} onOpenChange={setAchDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="hero" size="sm">+ Создать</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Создать достижение</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                      <div className="space-y-2 sm:col-span-1">
+                        <Label>Иконка</Label>
+                        <Input value={newAch.icon} onChange={(e) => setNewAch({ ...newAch, icon: e.target.value })} />
+                      </div>
+                      <div className="space-y-2 sm:col-span-3">
+                        <Label>Название</Label>
+                        <Input value={newAch.name} onChange={(e) => setNewAch({ ...newAch, name: e.target.value })} />
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <Label>Значение</Label>
-                      <Input type="number" value={newAch.condition_value} onChange={(e) => setNewAch({...newAch, condition_value: e.target.value})} />
+                      <Label>Картинка (URL)</Label>
+                      <Input value={newAch.image_url} onChange={(e) => setNewAch({ ...newAch, image_url: e.target.value })} />
                     </div>
                     <div className="space-y-2">
-                      <Label>XP</Label>
-                      <Input type="number" value={newAch.xp_reward} onChange={(e) => setNewAch({...newAch, xp_reward: e.target.value})} />
+                      <Label>Описание</Label>
+                      <Input value={newAch.description} onChange={(e) => setNewAch({ ...newAch, description: e.target.value })} />
                     </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="space-y-2">
+                        <Label>Тип</Label>
+                        <Select value={newAch.condition_type} onValueChange={(v) => setNewAch({ ...newAch, condition_type: v })}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="streak">Серия дней</SelectItem>
+                            <SelectItem value="total_days">Всего дней</SelectItem>
+                            <SelectItem value="products_added">Продуктов</SelectItem>
+                            <SelectItem value="perfect_bju">Идеальный БЖУ</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Значение</Label>
+                        <Input type="number" value={newAch.condition_value} onChange={(e) => setNewAch({ ...newAch, condition_value: e.target.value })} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>XP</Label>
+                        <Input type="number" value={newAch.xp_reward} onChange={(e) => setNewAch({ ...newAch, xp_reward: e.target.value })} />
+                      </div>
+                    </div>
+                    <Button variant="hero" className="w-full" onClick={createAchievement}>Создать</Button>
                   </div>
-                  <Button variant="hero" className="w-full" onClick={createAchievement}>Создать</Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
+
           <div className="space-y-2">
             {achievements.map((a) => (
               <Card key={a.id}>
                 <CardContent className="p-3 flex items-center gap-3">
-                  {a.image_url ? (
-                    <img
-                      src={String(a.image_url)}
-                      alt={String(a.name ?? "Achievement")}
-                      className="h-10 w-10 rounded-xl object-cover border border-border/60"
-                      loading="lazy"
-                    />
+                  {a.name.includes("Первый") ? (
+                    <div className="text-xl">{renderIcon("solar:footprints-bold-duotone", { className: "text-[20px] text-green-500" })}</div>
+                  ) : a.name.includes("Неделя") ? (
+                    <div className="text-xl">{renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-orange-500" })}</div>
+                  ) : a.name.includes("Две недели") ? (
+                    <div className="text-xl">{renderIcon("solar:bolt-bold-duotone", { className: "text-[20px] text-yellow-500" })}</div>
+                  ) : a.name.includes("Месяц") ? (
+                    <div className="text-xl">{renderIcon("solar:medal-ribbon-bold-duotone", { className: "text-[20px] text-purple-500" })}</div>
+                  ) : a.name.includes("Сотка") ? (
+                    <div className="text-xl">{renderIcon("solar:medal-bold-duotone", { className: "text-[20px] text-blue-500" })}</div>
+                  ) : a.name.includes("Год") ? (
+                    <div className="text-xl">{renderIcon("solar:trophy-bold-duotone", { className: "text-[20px] text-amber-500" })}</div>
+                  ) : a.name.includes("Белковый") ? (
+                    <div className="text-xl">{renderIcon("solar:bone-bold-duotone", { className: "text-[20px] text-red-500" })}</div>
+                  ) : a.name.includes("Балансир") ? (
+                    <div className="text-xl">{renderIcon("solar:scale-bold-duotone", { className: "text-[20px] text-cyan-500" })}</div>
+                  ) : a.name.includes("Коллекционер") ? (
+                    <div className="text-xl">{renderIcon("solar:box-minimalistic-bold-duotone", { className: "text-[20px] text-indigo-500" })}</div>
+                  ) : a.name.includes("Шеф-повар") ? (
+                    <div className="text-xl">{renderIcon("solar:chef-hat-bold-duotone", { className: "text-[20px] text-pink-500" })}</div>
+                  ) : a.name.includes("Лаборатория") ? (
+                    <div className="text-xl">{renderIcon("solar:test-tube-bold-duotone", { className: "text-[20px] text-teal-500" })}</div>
                   ) : (
-                    <span className="text-2xl">{a.icon}</span>
+                    <div className="text-xl">{renderIcon("solar:star-bold-duotone", { className: "text-[20px] text-primary" })}</div>
                   )}
                   <div className="flex-1">
                     <p className="font-medium text-sm">{a.name}</p>
@@ -698,7 +718,7 @@ const Admin = () => {
                 <SelectTrigger><SelectValue placeholder="Выбери достижение" /></SelectTrigger>
                 <SelectContent>
                   {achievements.map((a) => (
-                    <SelectItem key={a.id} value={String(a.id)}>{a.image_url ? "🖼️" : a.icon} {a.name}</SelectItem>
+                    <SelectItem key={a.id} value={String(a.id)}>{a.image_url ? renderIcon("solar:gallery-wide-bold-duotone", { className: "text-[14px]" }) : renderIcon(a.icon, { className: "text-[14px]" })} {a.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -737,13 +757,24 @@ const Admin = () => {
               {grantUserAchievements.map((ua) => {
                 const ach = achievements.find((a) => String(a.id) === String((ua as any).achievement_id));
                 const name = String((ach as any)?.name ?? (ua as any).achievement_id ?? "");
-                const icon = (ach as any)?.image_url ? "🖼️" : String((ach as any)?.icon ?? "🏆");
+                const icon = (ach as any)?.name.includes("Первый") ? renderIcon("solar:footprints-bold-duotone", { className: "text-[20px] text-green-500" }) :
+                (ach as any)?.name.includes("Неделя") ? renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-orange-500" }) :
+                (ach as any)?.name.includes("Две недели") ? renderIcon("solar:bolt-bold-duotone", { className: "text-[20px] text-yellow-500" }) :
+                (ach as any)?.name.includes("Месяц") ? renderIcon("solar:medal-ribbon-bold-duotone", { className: "text-[20px] text-purple-500" }) :
+                (ach as any)?.name.includes("Сотка") ? renderIcon("solar:medal-bold-duotone", { className: "text-[20px] text-blue-500" }) :
+                (ach as any)?.name.includes("Год") ? renderIcon("solar:trophy-bold-duotone", { className: "text-[20px] text-amber-500" }) :
+                (ach as any)?.name.includes("Белковый") ? renderIcon("solar:bone-bold-duotone", { className: "text-[20px] text-red-500" }) :
+                (ach as any)?.name.includes("Балансир") ? renderIcon("solar:scale-bold-duotone", { className: "text-[20px] text-cyan-500" }) :
+                (ach as any)?.name.includes("Коллекционер") ? renderIcon("solar:box-minimalistic-bold-duotone", { className: "text-[20px] text-indigo-500" }) :
+                (ach as any)?.name.includes("Шеф-повар") ? renderIcon("solar:chef-hat-bold-duotone", { className: "text-[20px] text-pink-500" }) :
+                (ach as any)?.name.includes("Лаборатория") ? renderIcon("solar:test-tube-bold-duotone", { className: "text-[20px] text-teal-500" }) :
+                renderIcon("solar:star-bold-duotone", { className: "text-[20px] text-primary" });
                 const xpReward = Number((ach as any)?.xp_reward ?? 0) || 0;
                 const earnedAt = (ua as any)?.earned_at;
                 const earnedDate = typeof earnedAt?.toDate === "function" ? earnedAt.toDate() : null;
 
                 return (
-                  <Card key={String((ua as any).id)} className="card-hover">
+                  <Card key={String((ua as any).id)}>
                     <CardContent className="p-3 flex items-center gap-3">
                       <div className="text-xl w-8 text-center shrink-0">{icon}</div>
                       <div className="flex-1 min-w-0">

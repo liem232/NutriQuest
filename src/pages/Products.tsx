@@ -344,11 +344,11 @@ const Products = () => {
         {filtered.map((p, i) => (
           <motion.div
             key={p.id}
-            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            transition={reduceMotion ? { duration: 0 } : { delay: i * 0.02 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: i * 0.05 }}
           >
-            <Card className="card-hover">
+            <Card>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div>

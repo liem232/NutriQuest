@@ -97,8 +97,8 @@ function currentTitleIndexByXp(xp: number) {
 }
 
 const anim = {
-  container: { hidden: {}, show: { transition: { staggerChildren: 0.035 } } },
-  item: { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } },
+  container: { hidden: {}, show: { transition: { staggerChildren: 0.05 } } },
+  item: { hidden: { opacity: 0 }, show: { opacity: 1 } },
 };
 
 const Achievements = () => {
@@ -205,8 +205,8 @@ const Achievements = () => {
   }
 
   return (
-    <motion.div variants={anim.container} initial="hidden" animate="show" className="space-y-8 pb-36 md:pb-24">
-      <motion.div variants={anim.item} className="glass-surface rounded-3xl p-4 sm:p-5 overflow-hidden relative">
+    <div className="space-y-8 pb-36 md:pb-24">
+      <div className="glass-surface rounded-3xl p-4 sm:p-5 overflow-hidden relative">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/12 via-transparent to-primary/10" />
         <div className="relative flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -220,78 +220,33 @@ const Achievements = () => {
             {renderIcon("solar:medal-ribbon-star-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Current title */}
-      <motion.div variants={anim.item} className="text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 10, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.26 }}
-          className="inline-flex relative"
-        >
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute -inset-3 rounded-3xl"
-            animate={{ opacity: [0.45, 0.8, 0.45], scale: [1, 1.03, 1] }}
-            transition={{ duration: 2.2, repeat: Infinity }}
-            style={{
-              background:
-                "radial-gradient(600px 180px at 50% 50%, hsl(38 92% 55% / 0.20), transparent 60%), radial-gradient(520px 160px at 40% 40%, hsl(162 72% 48% / 0.14), transparent 62%)",
-              filter: "blur(10px)",
-            }}
-          />
-          <motion.div
-            aria-hidden
-            className="pointer-events-none absolute -inset-1 rounded-3xl"
-            animate={{ opacity: [0.2, 0.45, 0.2] }}
-            transition={{ duration: 1.8, repeat: Infinity }}
-            style={{
-              background:
-                "linear-gradient(135deg, hsl(38 92% 55% / 0.35), transparent 45%, hsl(162 72% 48% / 0.22))",
-            }}
-          />
-
-          <div className="relative inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-card border border-border overflow-hidden">
-            <motion.div
-              aria-hidden
-              className="pointer-events-none absolute -left-1/2 top-0 h-full w-[180%] opacity-40"
-              animate={{ x: ["-20%", "20%", "-20%"] }}
-              transition={{ duration: 4.5, repeat: Infinity }}
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, hsl(38 92% 55% / 0.28), transparent)",
-              }}
-            />
-
-            <motion.div
-              whileHover={{ scale: 1.04, rotate: -2 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 320, damping: 16 }}
-              className="relative h-12 w-12 rounded-2xl gradient-gold flex items-center justify-center shadow-[var(--shadow-soft)]"
-            >
-              {renderIcon("solar:crown-bold-duotone", { className: "text-[28px] text-primary-foreground" })}
-            </motion.div>
-
-            <div className="relative text-left">
-              <p className="text-sm text-muted-foreground">Текущий титул</p>
-              <p
-                className={`text-2xl sm:text-3xl font-display font-bold tracking-tight ${titleTheme.titleClass}`}
-                style={{ filter: `drop-shadow(0 0 14px ${titleTheme.glow})` }}
-              >
-                {profile.title}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                {profile.xp} XP
-                {nextTitle !== currentTitleData ? ` • до ${nextTitle.title}: ${Math.max(0, nextTitle.xp - profile.xp)} XP` : ""}
-              </p>
-            </div>
+      <div className="text-center">
+        <div className="inline-flex relative">
+          <div className="h-11 w-11 rounded-2xl gradient-gold flex items-center justify-center shrink-0">
+            {renderIcon("solar:crown-bold-duotone", { className: "text-[28px] text-primary-foreground" })}
           </div>
-        </motion.div>
-      </motion.div>
+
+          <div className="relative text-left">
+            <p className="text-sm text-muted-foreground">Текущий титул</p>
+            <p
+              className={`text-2xl sm:text-3xl font-display font-bold tracking-tight ${titleTheme.titleClass} text-foreground`}
+              style={{ filter: `drop-shadow(0 0 14px ${titleTheme.glow})` }}
+            >
+              {profile.title}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {profile.xp} XP
+              {nextTitle !== currentTitleData ? ` • до ${nextTitle.title}: ${Math.max(0, nextTitle.xp - profile.xp)} XP` : ""}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Progress */}
-      <motion.div variants={anim.item}>
+      <div>
         <Card>
           <CardContent className="p-4">
             <div className="flex justify-between text-sm mb-2">
@@ -299,23 +254,24 @@ const Achievements = () => {
               <span className="text-muted-foreground">
                 {nextTitle === currentTitleData ? `${profile.xp} XP` : `${profile.xp} / ${nextTitle.xp} XP`}
               </span>
-              <span>{nextTitle.title}</span>
+              <span>{nextTitle === currentTitleData ? "Максимум" : nextTitle.title}</span>
             </div>
-            <div className="relative h-4 rounded-full bg-muted overflow-hidden">
+            <div className="relative h-5 rounded-full bg-muted/60 border border-border/60 overflow-hidden">
               <motion.div
                 key={progressKey}
-                className="absolute inset-y-0 left-0 rounded-full gradient-gold"
+                className="absolute inset-y-0 left-0 rounded-full gradient-gold shadow-sm ring-1 ring-black/5"
                 initial={{ width: 0 }}
                 animate={{ width: `${progressAnim}%` }}
                 transition={{ duration: 1.2 }}
+                style={{ minWidth: progressAnim > 0 ? 10 : 0 }}
               />
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
       {/* Achievements grid */}
-      <motion.div variants={anim.item}>
+      <div>
         <h2 className="text-xl font-display font-semibold mb-4">Достижения</h2>
         <Carousel opts={{ align: "start" }} className="relative">
           <CarouselContent>
@@ -323,20 +279,13 @@ const Achievements = () => {
               const unlocked = userAchievements.has(a.id);
               return (
                 <CarouselItem key={a.id} className="sm:basis-1/2 lg:basis-1/3">
-                  <motion.div variants={anim.item}>
+                  <div>
                     <Card className={`${unlocked ? "achievement-unlocked card-hover" : "achievement-locked"} overflow-hidden`}>
                       <CardContent className="p-4 flex items-start gap-3 relative">
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-accent/10" />
-                        {a.image_url ? (
-                          <img
-                            src={String(a.image_url)}
-                            alt={String(a.name ?? "Achievement")}
-                            className="h-12 w-12 rounded-xl object-cover relative border border-border/60"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="text-3xl relative">{renderIcon(a.icon, { className: "text-[28px]" })}</div>
-                        )}
+                        <div className="text-3xl relative flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10">
+                          {renderIcon("solar:star-bold-duotone", { className: "text-[28px]" })}
+                        </div>
                         <div className="flex-1 relative">
                           <p className="font-medium">{a.name}</p>
                           <p className="text-xs text-muted-foreground mt-0.5">{a.description}</p>
@@ -352,16 +301,16 @@ const Achievements = () => {
                         </div>
                       </CardContent>
                     </Card>
-                  </motion.div>
+                  </div>
                 </CarouselItem>
               );
             })}
           </CarouselContent>
         </Carousel>
-      </motion.div>
+      </div>
 
       {/* Leaderboard */}
-      <motion.div variants={anim.item}>
+      <div>
         <h2 className="text-xl font-display font-semibold mb-4">Рейтинг</h2>
         <Card>
           <CardContent className="p-0">
@@ -388,7 +337,7 @@ const Achievements = () => {
             {leaderboard.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">Пока нет участников</p>}
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
       <div className="fixed left-0 right-0 z-40 bottom-20 md:bottom-6">
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6">
@@ -412,7 +361,7 @@ const Achievements = () => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

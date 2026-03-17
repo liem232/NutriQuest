@@ -289,11 +289,11 @@ const Diary = () => {
           {[
             { title: "Ккал", value: `${totalCal}`, meta: `из ${goal}`, icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-foreground" }) },
             { title: "Белки", value: `${totalP}г`, meta: `цель ${profile?.protein_goal ?? 0}г`, icon: renderIcon("solar:bone-bold-duotone", { className: "text-[20px] text-foreground" }) },
-            { title: "Жиры", value: `${totalF}г`, meta: `цель ${profile?.fat_goal ?? 0}г`, icon: renderIcon("solar:drop-bold-duotone", { className: "text-[20px] text-foreground" }) },
+            { title: "Жиры", value: `${totalF}г`, meta: `цель ${profile?.fat_goal ?? 0}г`, icon: renderIcon("solar:dropper-bold-duotone", { className: "text-[20px] text-foreground" }) },
             { title: "Углеводы", value: `${totalC}г`, meta: `цель ${profile?.carbs_goal ?? 0}г`, icon: renderIcon("solar:wheat-bold-duotone", { className: "text-[20px] text-foreground" }) },
           ].map((s) => (
             <CarouselItem key={s.title} className="basis-1/2 sm:basis-1/3">
-              <Card className="card-hover overflow-hidden">
+              <Card className="overflow-hidden">
                 <CardContent className="p-4 relative">
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
                   <div className="relative">
@@ -357,8 +357,8 @@ const Diary = () => {
         {Object.keys(mealLabels).map((meal) => (
           <TabsContent key={meal} value={meal} className="space-y-3 mt-4">
             {entries.filter(e => e.meal === meal).map((entry) => (
-              <motion.div key={entry.id} layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-                <Card className="card-hover">
+              <motion.div key={entry.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                <Card>
                   <CardContent className="p-4 flex items-center gap-4">
                     <div className="flex-1">
                       <p className="font-medium">{entry.product_name}</p>

@@ -127,12 +127,36 @@ const Landing = () => {
     setShowForgot(false);
   };
 
+  const validateName = (name: string) => {
+    if (!name || name.length < 2) return "Минимум 2 символа";
+    if (name.length > 15) return "Максимум 15 символов";
+    if (/\d/.test(name)) return "Цифры не разрешены";
+    if (/[^a-zA-Zа-яА-ЯёЁ]/.test(name)) return "Только буквы без пробелов, дефисов и спецсимволов";
+    return null;
+  };
+
+  const validateEmail = (email: string) => {
+    if (!email) return "Введите email";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Некорректный формат email";
+    return null;
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (regStep === 1) {
-      if (!regEmail || !regPassword || !regName) {
-        toast({ variant: "destructive", title: "Заполните все поля" });
+      const nameErr = validateName(regName);
+      if (nameErr) {
+        toast({ variant: "destructive", title: "Имя", description: nameErr });
+        return;
+      }
+      const emailErr = validateEmail(regEmail);
+      if (emailErr) {
+        toast({ variant: "destructive", title: "Email", description: emailErr });
+        return;
+      }
+      if (!regPassword) {
+        toast({ variant: "destructive", title: "Введите пароль" });
         return;
       }
       const pwErr = validatePassword(regPassword);
@@ -214,14 +238,13 @@ const Landing = () => {
         hint = "Метод Email/Password выключен в Firebase Auth.";
       } else if (code.includes("network-request-failed")) {
         hint = "Похоже на сетевую ошибку (на мобилке часто блокируется VPN/AdBlock/нестабильная сеть).";
+      } else if (code.includes("permission-denied")) {
+        hint = "Ошибка доступа к базе данных. Попробуйте позже или обратитесь в поддержку.";
       }
 
       console.error("register_failed", { code, message: e?.message, error: e });
-      toast({
-        variant: "destructive",
-        title: "Ошибка регистрации",
-        description: `${code ? `[${code}] ` : ""}${e?.message ?? "Ошибка регистрации"}${hint ? `\n${hint}` : ""}`,
-      });
+      // Не показываем пользователю технические ошибки - просто логируем
+      if (!hint) return;
     } finally {
       setLoading(false);
     }

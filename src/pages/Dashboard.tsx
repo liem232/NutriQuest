@@ -153,7 +153,8 @@ const Dashboard = () => {
         });
         const recs = getRecommendations(profile as any, Math.round(p), Math.round(f), Math.round(c), Math.round(cal));
         setRecommendations(recs);
-      } catch {
+      } catch (err) {
+        console.error("[Dashboard] food_diary today query failed:", err);
         setTodayData({ calories: 0, protein: 0, fat: 0, carbs: 0 });
         const recs = getRecommendations(profile as any, 0, 0, 0, 0);
         setRecommendations(recs);
@@ -189,7 +190,8 @@ const Dashboard = () => {
             ],
             pct: Math.min(100, Math.round((total / ((profile as any).daily_calories || 2200)) * 100)),
           };
-        } catch {
+        } catch (err) {
+          console.error("[Dashboard] food_diary week query failed:", err);
           return {
             day: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"][
               new Date(date).getDay() === 0 ? 6 : new Date(date).getDay() - 1
@@ -224,7 +226,8 @@ const Dashboard = () => {
             total += (grams / 100) * Number(product.calories_per_100g ?? 0);
           });
           return { day: i + 1, cal: Math.round(total) };
-        } catch {
+        } catch (err) {
+          console.error("[Dashboard] food_diary month query failed:", err);
           return { day: i + 1, cal: 0 };
         }
       })
@@ -255,7 +258,8 @@ const Dashboard = () => {
         });
 
         setRecentAchievements(rows.slice(0, 3));
-      } catch {
+      } catch (err) {
+        console.error("[Dashboard] user_achievements query failed:", err);
         setRecentAchievements([]);
       }
     })();
@@ -271,44 +275,9 @@ const Dashboard = () => {
   const weekAvg = weekData.length ? Math.round(weekData.reduce((s, d) => s + d.pct, 0) / weekData.filter(d => d.pct > 0).length || 1) : 0;
 
   const bju = [
-    { name: "Белки", value: todayData.protein || 1, color: "hsl(210 80% 55%)" },
-    { name: "Жиры", value: todayData.fat || 1, color: "hsl(38 92% 55%)" },
-    { name: "Углеводы", value: todayData.carbs || 1, color: "hsl(152 68% 45%)" },
-  ];
-
-  const insightCards = [
-    {
-      title: "Калории",
-      value: `${todayData.calories} / ${goal}`,
-      meta: `${pct}% от нормы`,
-      accent: "from-emerald-500/18 via-sky-500/10 to-transparent",
-      href: "/diary",
-      icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-foreground" }),
-    },
-    {
-      title: "Серия дней",
-      value: `${profile.streak_days} 🔥`,
-      meta: "Не сбивай темп", 
-      accent: "from-amber-500/18 via-emerald-500/10 to-transparent",
-      href: "/achievements",
-      icon: renderIcon("solar:bolt-bold-duotone", { className: "text-[20px] text-foreground" }),
-    },
-    {
-      title: "Титул",
-      value: profile.title,
-      meta: `${profile.xp} XP`,
-      accent: "from-violet-500/18 via-amber-500/10 to-transparent",
-      href: "/achievements",
-      icon: renderIcon("solar:cup-star-bold-duotone", { className: "text-[20px] text-foreground" }),
-    },
-    {
-      title: "Каталог",
-      value: "Найди продукт",
-      meta: "Или добавь свой", 
-      accent: "from-sky-500/18 via-emerald-500/10 to-transparent",
-      href: "/products",
-      icon: renderIcon("solar:magnifer-bold-duotone", { className: "text-[20px] text-foreground" }),
-    },
+    { name: "Б", value: todayData.protein || 1, color: "hsl(210 80% 55%)" },
+    { name: "Ж", value: todayData.fat || 1, color: "hsl(38 92% 55%)" },
+    { name: "У", value: todayData.carbs || 1, color: "hsl(152 68% 45%)" },
   ];
 
   const tips = [
@@ -354,7 +323,7 @@ const Dashboard = () => {
     <motion.div variants={anim.container} initial="hidden" animate="show" className="space-y-6 pb-36 md:pb-24">
       <motion.div variants={anim.item} className="flex items-center gap-3">
         <div>
-          <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight">Привет, {profile.display_name}! 👋</h1>
+          <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight">Привет, {profile.display_name}!</h1>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-sm bg-accent/20 text-accent px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
               {renderIcon("solar:star-bold-duotone", { className: "text-[14px]" })}
@@ -365,7 +334,7 @@ const Dashboard = () => {
                 {profile.title}
               </span>
             </span>
-            <span className="text-sm text-muted-foreground">{profile.xp} XP • {profile.streak_days} 🔥</span>
+            <span className="text-sm text-muted-foreground">{profile.xp} XP • {profile.streak_days}</span>
           </div>
           {fact && (
             <div className="mt-3 inline-flex items-start gap-2 rounded-2xl border border-border/60 bg-card/60 backdrop-blur px-3 py-2">
@@ -376,208 +345,152 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
-      <motion.div variants={anim.item}>
-        <PageBanner
-          eyebrow="Сегодня"
-          title="Фокус дня"
-          description="Доведи день до красивого результата: следи за нормой и сохрани streak. Всё под рукой."
-          icon={renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-primary-foreground" })}
-        />
-      </motion.div>
-
-      <motion.div variants={anim.item}>
-        <Carousel opts={{ align: "start", loop: true }} className="relative">
-          <CarouselContent>
-            {insightCards.map((c) => (
-              <CarouselItem key={c.title} className="sm:basis-1/2 lg:basis-1/3">
-                <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 320, damping: 18 }}>
-                  <Card className="card-hover overflow-hidden">
-                  <CardContent className="p-4 relative">
-                    <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${c.accent}`} />
-                    <div className="relative">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-xs text-muted-foreground">{c.title}</p>
-                          <p className="mt-2 font-display font-bold text-lg truncate">{c.value}</p>
-                          <p className="mt-1 text-xs text-muted-foreground">{c.meta}</p>
-                        </div>
-                        <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
-                          {c.icon}
-                        </div>
-                      </div>
-                      <div className="mt-4">
-                        <Button variant="outline" className="w-full bg-card/60 backdrop-blur border-border/60" asChild>
-                          <Link to={c.href}>Открыть</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                  </Card>
-                </motion.div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="hidden lg:flex -left-10 bg-card/70 border-border/60 backdrop-blur" />
-          <CarouselNext className="hidden lg:flex -right-10 bg-card/70 border-border/60 backdrop-blur" />
-        </Carousel>
-      </motion.div>
-
-      <motion.div variants={anim.item}>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-display font-semibold">Советы по питанию</h2>
-          <span className="text-xs text-muted-foreground">Нажми на карточку</span>
+      {/* Советы - компактный слайдер с явными стрелками */}
+      <motion.div variants={anim.item} className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-display font-semibold">Советы по питанию</h2>
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">{tips.length} шт.</span>
         </div>
         <Carousel opts={{ align: "start", loop: true }} className="relative">
           <CarouselContent>
             {tips.map((t) => (
-              <CarouselItem key={t.title} className="sm:basis-1/2 lg:basis-1/3">
-                <motion.div
-                  whileHover={{ y: -4 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 320, damping: 18 }}
+              <CarouselItem key={t.title} className="basis-full sm:basis-1/2 lg:basis-1/3">
+                <Card 
+                  className="card-hover overflow-hidden border-l-4 border-l-primary cursor-pointer h-full" 
                   onClick={() => setSelectedTip(t)}
-                  className="cursor-pointer"
                 >
-                  <Card className="card-hover overflow-hidden">
-                    <CardContent className="p-4 relative">
-                      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${t.accent}`} />
-                      <div className="relative">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-xs text-muted-foreground">{t.badge}</p>
-                            <p className="mt-2 font-display font-bold text-lg truncate">{t.title}</p>
-                            <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{t.desc}</p>
-                          </div>
-                          <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
-                            {renderIcon(t.icon, { className: "text-lg" })}
-                          </div>
-                        </div>
-                        <div className="mt-4">
-                          <Button variant="outline" className="w-full bg-card/60 backdrop-blur border-border/60">Подробнее</Button>
-                        </div>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        {renderIcon(t.icon, { className: "text-lg" })}
                       </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm">{t.title}</p>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{t.desc}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden lg:flex -left-10 bg-card/70 border-border/60 backdrop-blur" />
-          <CarouselNext className="hidden lg:flex -right-10 bg-card/70 border-border/60 backdrop-blur" />
+          <div className="flex justify-center gap-2 mt-3">
+            <CarouselPrevious className="static translate-y-0 bg-card border-border h-9 w-9" />
+            <CarouselNext className="static translate-y-0 bg-card border-border h-9 w-9" />
+          </div>
         </Carousel>
       </motion.div>
 
-      {/* Today + BJU */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <motion.div variants={anim.item} className="lg:col-span-2">
-          <Card className="card-hover">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                {renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-primary" })} Сегодня
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-end justify-between">
-                <div>
-                  <p className="text-4xl font-display font-bold">{todayData.calories}</p>
-                  <p className="text-muted-foreground text-sm">из {goal} ккал</p>
-                </div>
-                <p className="text-3xl font-display font-bold text-primary">{pct}%</p>
+      {/* Today + БЖУ */}
+      <div>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                {renderIcon("solar:fire-bold-duotone", { className: "text-[18px] text-primary" })}
+                <span className="font-medium">Сегодня</span>
               </div>
-              <div className="relative h-4 rounded-full bg-muted overflow-hidden">
-                <motion.div className="absolute inset-y-0 left-0 rounded-full gradient-primary" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1 }} />
+              <span className="text-sm text-muted-foreground">{todayData.calories} / {goal} ккал</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="relative h-3 flex-1 rounded-full bg-muted overflow-hidden">
+                <div className="absolute inset-y-0 left-0 rounded-full gradient-primary" style={{ width: `${pct}%` }} />
               </div>
-              <div className="grid grid-cols-3 gap-3 text-center text-sm">
-                <div className="p-2 rounded-lg bg-muted/50">
-                  <p className="font-medium">{todayData.protein}г <span className="text-xs text-muted-foreground">/ {profile.protein_goal}</span></p>
-                  <p className="text-muted-foreground text-xs">Белки</p>
-                </div>
-                <div className="p-2 rounded-lg bg-muted/50">
-                  <p className="font-medium">{todayData.fat}г <span className="text-xs text-muted-foreground">/ {profile.fat_goal}</span></p>
-                  <p className="text-muted-foreground text-xs">Жиры</p>
-                </div>
-                <div className="p-2 rounded-lg bg-muted/50">
-                  <p className="font-medium">{todayData.carbs}г <span className="text-xs text-muted-foreground">/ {profile.carbs_goal}</span></p>
-                  <p className="text-muted-foreground text-xs">Углеводы</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+              <span className="text-xl font-bold text-primary w-12 text-right">{pct}%</span>
+            </div>
 
-        <motion.div variants={anim.item}>
-          <Card className="card-hover h-full">
-            <CardHeader className="pb-2"><CardTitle className="text-lg">БЖУ</CardTitle></CardHeader>
-            <CardContent className="flex items-center justify-center">
-              <ResponsiveContainer width={180} height={180}>
-                <PieChart>
-                  <Pie data={bju} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value" strokeWidth={0}>
-                    {bju.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </motion.div>
+            <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-border/50">
+              <div className="text-center">
+                <p className="text-lg font-bold">{todayData.protein}</p>
+                <p className="text-[10px] text-muted-foreground">Белки</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-bold">{todayData.fat}</p>
+                <p className="text-[10px] text-muted-foreground">Жиры</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-bold">{todayData.carbs}</p>
+                <p className="text-[10px] text-muted-foreground">Углев</p>
+              </div>
+              <div className="text-center">
+                <div className="h-10 w-10 mx-auto">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={bju} cx="50%" cy="50%" innerRadius={15} outerRadius={20} paddingAngle={2} dataKey="value" strokeWidth={0}>
+                        {bju.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Week */}
-      <motion.div variants={anim.item}>
-        <Card className="card-hover">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center justify-between text-lg">
-              <span className="flex items-center gap-2">{renderIcon("solar:graph-up-bold-duotone", { className: "text-[20px] text-primary" })} Неделя</span>
-              <span className="text-sm text-muted-foreground">Средний: {weekAvg}%</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {weekData.map((d) => (
-              <div key={d.day} className="flex items-center gap-3">
-                <span className="text-sm w-6 text-muted-foreground">{d.day}</span>
-                <div className="flex-1 relative h-3 rounded-full bg-muted overflow-hidden">
-                  <motion.div className="absolute inset-y-0 left-0 rounded-full gradient-primary" initial={{ width: 0 }} animate={{ width: `${d.pct}%` }} transition={{ duration: 0.8 }} />
-                </div>
-                <span className="text-sm font-medium w-10 text-right">{d.pct}%</span>
+      <div>
+        <Card>
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                {renderIcon("solar:graph-up-bold-duotone", { className: "text-[16px] text-primary" })}
+                <span className="text-sm font-medium">Неделя</span>
               </div>
-            ))}
+              <span className="text-xs text-muted-foreground">ср. {weekAvg}%</span>
+            </div>
+            <div className="flex items-end gap-1 h-16">
+              {weekData.map((d) => (
+                <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
+                  <div className="w-full bg-muted rounded-t-sm relative overflow-hidden" style={{ height: `${Math.max(4, d.pct * 0.6)}px` }}>
+                    <div className="absolute bottom-0 left-0 right-0 bg-primary rounded-t-sm" style={{ height: `${d.pct}%` }} />
+                  </div>
+                  <span className="text-[10px] text-muted-foreground">{d.day}</span>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
       {/* Month */}
-      <motion.div variants={anim.item}>
-        <Card className="card-hover">
-          <CardHeader className="pb-2"><CardTitle className="text-lg">Месяц</CardTitle></CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+      <div>
+        <Card>
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2 mb-2">
+              {renderIcon("solar:chart-square-bold-duotone", { className: "text-[16px] text-primary" })}
+              <span className="text-sm font-medium">Месяц</span>
+            </div>
+            <ResponsiveContainer width="100%" height={80}>
               <LineChart data={monthData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 90%)" />
-                <XAxis dataKey="day" fontSize={12} /><YAxis fontSize={12} /><Tooltip />
                 <Line type="monotone" dataKey="cal" stroke="hsl(152 68% 45%)" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
 
       {/* Recommendations */}
       {recommendations.length > 0 && (
-        <motion.div variants={anim.item}>
-          <h2 className="text-lg font-display font-semibold mb-3">Рекомендации</h2>
+        <div className="space-y-3">
+          <h2 className="text-base font-display font-semibold">Рекомендации</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
             {recommendations.map((r, i) => (
-              <Card key={i} className="card-hover min-w-[200px] cursor-pointer shrink-0" onClick={() => setSelectedRec(r)}>
+              <Card key={i} className="min-w-[260px] cursor-pointer shrink-0 border-l-4 border-l-primary" onClick={() => setSelectedRec(r)}>
                 <CardContent className="p-4">
-                  <div className="h-9 w-9 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center">
-                    {renderIcon(r.icon, { className: "text-2xl" })}
-                  </div>
-                  <p className="font-medium mt-2 text-sm">{r.title}</p>
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{r.desc}</p>
+                  <p className="font-medium text-sm">{r.title}</p>
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{r.desc}</p>
+                  {r.products.length > 0 && (
+                    <div className="mt-3 pt-2 border-t border-border/50">
+                      <p className="text-xs text-muted-foreground">{r.products.slice(0, 3).join(" • ")}</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Rec modal */}
@@ -620,7 +533,7 @@ const Dashboard = () => {
       </Dialog>
 
       {/* Recent achievements */}
-      <motion.div variants={anim.item}>
+      <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-display font-semibold">Последние достижения</h2>
           <Button variant="ghost" size="sm" asChild>
@@ -632,17 +545,32 @@ const Dashboard = () => {
             <p className="text-sm text-muted-foreground col-span-3">Пока нет достижений. Начните заполнять дневник!</p>
           ) : (
             recentAchievements.map((a) => (
-              <Card key={a.id} className="card-hover">
+              <Card key={a.id}>
                 <CardContent className="p-4 flex items-center gap-3">
-                  {a.achievement?.image_url ? (
-                    <img
-                      src={String(a.achievement.image_url)}
-                      alt={String(a.achievement?.name ?? "Achievement")}
-                      className="h-10 w-10 rounded-xl object-cover border border-border/60"
-                      loading="lazy"
-                    />
+                  {a.achievement?.name.includes("Первый") ? (
+                    <div className="text-3xl">{renderIcon("solar:footprints-bold-duotone", { className: "text-[26px] text-green-500" })}</div>
+                  ) : a.achievement?.name.includes("Неделя") ? (
+                    <div className="text-3xl">{renderIcon("solar:fire-bold-duotone", { className: "text-[26px] text-orange-500" })}</div>
+                  ) : a.achievement?.name.includes("Две недели") ? (
+                    <div className="text-3xl">{renderIcon("solar:bolt-bold-duotone", { className: "text-[26px] text-yellow-500" })}</div>
+                  ) : a.achievement?.name.includes("Месяц") ? (
+                    <div className="text-3xl">{renderIcon("solar:medal-ribbon-bold-duotone", { className: "text-[26px] text-purple-500" })}</div>
+                  ) : a.achievement?.name.includes("Сотка") ? (
+                    <div className="text-3xl">{renderIcon("solar:medal-bold-duotone", { className: "text-[26px] text-blue-500" })}</div>
+                  ) : a.achievement?.name.includes("Год") ? (
+                    <div className="text-3xl">{renderIcon("solar:trophy-bold-duotone", { className: "text-[26px] text-amber-500" })}</div>
+                  ) : a.achievement?.name.includes("Белковый") ? (
+                    <div className="text-3xl">{renderIcon("solar:bone-bold-duotone", { className: "text-[26px] text-red-500" })}</div>
+                  ) : a.achievement?.name.includes("Балансир") ? (
+                    <div className="text-3xl">{renderIcon("solar:scale-bold-duotone", { className: "text-[26px] text-cyan-500" })}</div>
+                  ) : a.achievement?.name.includes("Коллекционер") ? (
+                    <div className="text-3xl">{renderIcon("solar:box-minimalistic-bold-duotone", { className: "text-[26px] text-indigo-500" })}</div>
+                  ) : a.achievement?.name.includes("Шеф-повар") ? (
+                    <div className="text-3xl">{renderIcon("solar:chef-hat-bold-duotone", { className: "text-[26px] text-pink-500" })}</div>
+                  ) : a.achievement?.name.includes("Лаборатория") ? (
+                    <div className="text-3xl">{renderIcon("solar:test-tube-bold-duotone", { className: "text-[26px] text-teal-500" })}</div>
                   ) : (
-                    <div className="text-3xl">{renderIcon(a.achievement?.icon ?? "mdi:trophy-outline", { className: "text-[26px]" })}</div>
+                    <div className="text-3xl">{renderIcon("solar:star-bold-duotone", { className: "text-[26px] text-primary" })}</div>
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="font-medium truncate">{a.achievement?.name ?? "Достижение"}</p>
@@ -660,7 +588,7 @@ const Dashboard = () => {
             ))
           )}
         </div>
-      </motion.div>
+      </div>
 
       <div className="fixed left-0 right-0 z-40 bottom-20 md:bottom-6">
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 md:px-6">
