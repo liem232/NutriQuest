@@ -28,7 +28,7 @@ style.textContent = `
     100% { transform: translateX(-50%); }
   }
   .animate-scroll-landing {
-    animation: scroll-landing 25s linear infinite;
+    animation: scroll-landing 40s linear infinite;
     width: fit-content;
   }
 `;
@@ -117,13 +117,37 @@ const Landing = () => {
     return null;
   };
 
+  const getAuthErrorMessage = (error: any): string => {
+    const code = String(error?.code ?? "");
+    switch (code) {
+      case "auth/invalid-credential":
+      case "auth/wrong-password":
+      case "auth/user-not-found":
+        return "Неверный email или пароль";
+      case "auth/email-already-in-use":
+        return "Этот email уже зарегистрирован";
+      case "auth/weak-password":
+        return "Пароль слишком слабый";
+      case "auth/invalid-email":
+        return "Неверный формат email";
+      case "auth/network-request-failed":
+        return "Ошибка сети. Проверьте подключение";
+      case "auth/too-many-requests":
+        return "Слишком много попыток. Попробуйте позже";
+      case "auth/user-disabled":
+        return "Аккаунт заблокирован";
+      default:
+        return "Произошла ошибка. Попробуйте снова";
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Ошибка входа", description: e?.message ?? "Ошибка входа" });
+      toast({ variant: "destructive", title: "Ошибка входа", description: getAuthErrorMessage(e) });
     }
     setLoading(false);
   };
@@ -135,11 +159,17 @@ const Landing = () => {
     }
     setLoading(true);
     try {
-      await sendPasswordResetEmail(auth, forgotEmail, {
-        url: `${window.location.origin}/reset-password`,
-      });
+      const actionCodeSettings = {
+        url: `${window.location.origin}/reset-password?email=${encodeURIComponent(forgotEmail)}`,
+        handleCodeInApp: false,
+      };
+      console.log("Sending reset email to:", forgotEmail);
+      console.log("Redirect URL:", actionCodeSettings.url);
+      await sendPasswordResetEmail(auth, forgotEmail, actionCodeSettings);
+      console.log("Reset email sent successfully");
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Ошибка", description: e?.message ?? "Ошибка" });
+      console.error("Failed to send reset email:", e);
+      toast({ variant: "destructive", title: "Ошибка", description: getAuthErrorMessage(e) });
       setLoading(false);
       return;
     }
@@ -252,21 +282,18 @@ const Landing = () => {
       await setDoc(doc(db, "user_roles", uid), { user_id: uid, role: "user" }, { merge: true });
     } catch (e: any) {
       const code = String(e?.code ?? "");
-      let hint: string | null = null;
+      let hint = getAuthErrorMessage(e);
 
       if (code.includes("unauthorized-domain")) {
-        hint = "Домен не разрешён в Firebase Auth (Authorized domains).";
+        hint = "Домен не разрешён для регистрации";
       } else if (code.includes("operation-not-allowed")) {
-        hint = "Метод Email/Password выключен в Firebase Auth.";
-      } else if (code.includes("network-request-failed")) {
-        hint = "Похоже на сетевую ошибку (на мобилке часто блокируется VPN/AdBlock/нестабильная сеть).";
+        hint = "Регистрация временно недоступна";
       } else if (code.includes("permission-denied")) {
-        hint = "Ошибка доступа к базе данных. Попробуйте позже или обратитесь в поддержку.";
+        hint = "Ошибка доступа. Попробуйте позже";
       }
 
       console.error("register_failed", { code, message: e?.message, error: e });
-      // Не показываем пользователю технические ошибки - просто логируем
-      if (!hint) return;
+      toast({ variant: "destructive", title: "Ошибка регистрации", description: hint });
     } finally {
       setLoading(false);
     }
@@ -302,35 +329,35 @@ const Landing = () => {
             </p>
 
             <div className="mt-6 relative overflow-hidden">
-              <div className="flex gap-4 animate-scroll-landing">
+              <div className="flex gap-3 animate-scroll-landing">
                 {[...slides, ...slides].map((s, i) => (
-                  <div key={`${s.title}-${i}`} className="flex-none w-full sm:w-1/2 px-1">
-                    <div className={`glass-surface rounded-3xl p-4 sm:p-5 overflow-hidden relative`}>
-                      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${s.accent}`} />
+                  <div key={`${s.title}-${i}`} className="flex-none w-[260px]">
+                    <div className="glass-surface rounded-2xl p-3 overflow-hidden relative h-full">
+                      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${s.accent} opacity-60`} />
                       <div className="relative">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <div className="inline-flex items-center gap-2 rounded-full bg-card/60 backdrop-blur border border-border/60 px-2.5 py-1 text-[11px] text-muted-foreground">
-                              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="inline-flex items-center gap-1.5 rounded-full bg-card/60 backdrop-blur border border-border/60 px-2 py-0.5 text-[10px] text-muted-foreground">
+                              <span className="h-1 w-1 rounded-full bg-primary" />
                               {s.badge}
                             </div>
-                            <p className="mt-3 text-base font-display font-semibold leading-tight">
+                            <p className="mt-1.5 text-sm font-display font-semibold leading-tight">
                               {s.title}
                             </p>
-                            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                            <p className="mt-1 text-xs text-muted-foreground leading-snug">
                               {s.desc}
                             </p>
                           </div>
-                          <div className="h-10 w-10 rounded-2xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
+                          <div className="h-8 w-8 rounded-xl bg-card/60 border border-border/60 backdrop-blur flex items-center justify-center shrink-0">
                             {s.icon}
                           </div>
                         </div>
 
-                        <div className="mt-4 flex items-center gap-2">
-                          <div className="h-2 flex-1 rounded-full bg-muted/60 overflow-hidden">
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className="h-1.5 flex-1 rounded-full bg-muted/60 overflow-hidden">
                             <div className="h-full w-2/3 gradient-primary rounded-full" />
                           </div>
-                          <span className="text-xs text-muted-foreground">живой UI</span>
+                          <span className="text-[10px] text-muted-foreground">живой UI</span>
                         </div>
                       </div>
                     </div>

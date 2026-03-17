@@ -28,16 +28,30 @@ const ResetPassword = () => {
     }
     setLoading(true);
     try {
-      const oobCode = new URLSearchParams(window.location.search).get("oobCode");
+      const urlParams = new URLSearchParams(window.location.search);
+      const oobCode = urlParams.get("oobCode");
+      
+      console.log("Reset attempt - oobCode present:", !!oobCode);
+      console.log("Current URL:", window.location.href);
+      
       if (!oobCode) {
         toast({ variant: "destructive", title: "Ошибка", description: "Неверная или устаревшая ссылка для сброса пароля" });
         setLoading(false);
         return;
       }
+      
+      console.log("Calling confirmPasswordReset...");
       await confirmPasswordReset(auth, oobCode, password);
-      toast({ title: "Пароль обновлён!" });
-      navigate("/dashboard");
+      console.log("Password reset successful!");
+      
+      toast({ title: "Пароль обновлён!", description: "Войдите с новым паролем" });
+      
+      // Delay navigation to ensure toast is shown
+      setTimeout(() => {
+        navigate("/?login=true");
+      }, 1500);
     } catch (e: any) {
+      console.error("Password reset error:", e);
       const code = String(e?.code ?? "");
       let message = "Не удалось обновить пароль. Попробуйте снова";
       if (code === "auth/weak-password") message = "Пароль слишком слабый";
