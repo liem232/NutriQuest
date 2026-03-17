@@ -30,7 +30,7 @@ const ResetPassword = () => {
     try {
       const oobCode = new URLSearchParams(window.location.search).get("oobCode");
       if (!oobCode) {
-        toast({ variant: "destructive", title: "Ошибка", description: "Отсутствует код восстановления (oobCode)" });
+        toast({ variant: "destructive", title: "Ошибка", description: "Неверная или устаревшая ссылка для сброса пароля" });
         setLoading(false);
         return;
       }
@@ -38,7 +38,12 @@ const ResetPassword = () => {
       toast({ title: "Пароль обновлён!" });
       navigate("/dashboard");
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Ошибка", description: e?.message ?? "Ошибка" });
+      const code = String(e?.code ?? "");
+      let message = "Не удалось обновить пароль. Попробуйте снова";
+      if (code === "auth/weak-password") message = "Пароль слишком слабый";
+      if (code === "auth/expired-action-code") message = "Ссылка устарела. Запросите новую";
+      if (code === "auth/invalid-action-code") message = "Неверная или использованная ссылка";
+      toast({ variant: "destructive", title: "Ошибка", description: message });
     } finally {
       setLoading(false);
     }
