@@ -9,11 +9,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { collection, doc, getCountFromServer, query, updateDoc, where } from "firebase/firestore";
 import { db } from "@/integrations/firebase/client";
 import { calculateDailyCalories } from "@/lib/calculateDailyCalories";
 import { renderIcon } from "@/lib/icons";
+
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-scroll {
+    animation: scroll 20s linear infinite;
+    width: fit-content;
+  }
+`;
+if (!document.head.querySelector('style[data-profile-scroll]')) {
+  style.setAttribute('data-profile-scroll', 'true');
+  document.head.appendChild(style);
+}
 
 const activityLabels: Record<string, string> = {
   sedentary: "Сидячий образ жизни",
@@ -134,15 +149,20 @@ const Profile = () => {
         </CardContent>
       </Card>
 
-      <Carousel opts={{ align: "start" }} className="relative">
-        <CarouselContent>
+      <div className="relative overflow-hidden">
+        <div className="flex gap-4 animate-scroll">
           {[
             { icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-primary" }), value: profile.streak_days.toString(), label: "Дней подряд" },
             { icon: renderIcon("solar:bolt-bold-duotone", { className: "text-[20px] text-accent" }), value: ((profile as any).best_streak ?? 0).toString(), label: "Лучшая серия" },
             { icon: renderIcon("solar:calendar-bold-duotone", { className: "text-[20px] text-primary" }), value: profile.total_days.toString(), label: "Всего дней" },
             { icon: renderIcon("solar:cup-star-bold-duotone", { className: "text-[20px] text-accent" }), value: achievementCount.toString(), label: "Достижений" },
+            // Duplicate for seamless loop
+            { icon: renderIcon("solar:fire-bold-duotone", { className: "text-[20px] text-primary" }), value: profile.streak_days.toString(), label: "Дней подряд" },
+            { icon: renderIcon("solar:bolt-bold-duotone", { className: "text-[20px] text-accent" }), value: ((profile as any).best_streak ?? 0).toString(), label: "Лучшая серия" },
+            { icon: renderIcon("solar:calendar-bold-duotone", { className: "text-[20px] text-primary" }), value: profile.total_days.toString(), label: "Всего дней" },
+            { icon: renderIcon("solar:cup-star-bold-duotone", { className: "text-[20px] text-accent" }), value: achievementCount.toString(), label: "Достижений" },
           ].map((s, i) => (
-            <CarouselItem key={i} className="basis-1/2 sm:basis-1/3">
+            <div key={i} className="flex-none w-1/2 sm:w-1/3 px-1">
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="flex justify-center mb-2">{s.icon}</div>
@@ -150,23 +170,23 @@ const Profile = () => {
                   <p className="text-xs text-muted-foreground">{s.label}</p>
                 </CardContent>
               </Card>
-            </CarouselItem>
+            </div>
           ))}
-        </CarouselContent>
-      </Carousel>
+        </div>
+      </div>
 
       <Card>
         <CardHeader><CardTitle className="text-lg">Личные данные</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Имя</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+            <Input value={name} disabled readOnly className="bg-muted" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Пол</Label>
-              <Select value={gender} onValueChange={(v) => setGender(v as "male" | "female")}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select value={gender} disabled>
+                <SelectTrigger className="bg-muted"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="male">Мужской</SelectItem>
                   <SelectItem value="female">Женский</SelectItem>

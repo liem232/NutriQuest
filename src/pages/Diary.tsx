@@ -148,6 +148,12 @@ const Diary = () => {
   const addProduct = async (productId: string) => {
     if (!user) return;
     try {
+      // Check limit: max 5 items per meal type
+      const currentMealCount = entries.filter(e => e.meal === currentMeal).length;
+      if (currentMealCount >= 5) {
+        toast({ variant: "destructive", title: "Лимит достигнут", description: "Максимум 5 продуктов на один приём пищи. Удалите лишние, чтобы добавить новые." });
+        return;
+      }
       const productSnap = await getDoc(doc(db, "products", productId));
       if (!productSnap.exists()) {
         toast({ variant: "destructive", title: "Продукт не найден" });
@@ -204,7 +210,15 @@ const Diary = () => {
     if (!tpl) return;
 
     try {
-      for (const item of tpl.items) {
+      // Check limit: max 5 items per meal type
+      const currentMealCount = entries.filter(e => e.meal === currentMeal).length;
+      const availableSlots = 5 - currentMealCount;
+      if (availableSlots <= 0) {
+        toast({ variant: "destructive", title: "Лимит достигнут", description: "Максимум 5 продуктов на один приём пищи. Удалите лишние, чтобы добавить шаблон." });
+        return;
+      }
+      const itemsToAdd = tpl.items.slice(0, availableSlots);
+      for (const item of itemsToAdd) {
         const p = approvedProducts.find((x) => String(x.name ?? "").toLowerCase() === item.name.toLowerCase());
         if (!p) continue;
         await addDoc(collection(db, "food_diary"), {
@@ -222,6 +236,11 @@ const Diary = () => {
           },
         });
       }
+      if (itemsToAdd.length < tpl.items.length) {
+        toast({ title: `Добавлено частично: ${tpl.title} (не хватило места)`, variant: "default" });
+      } else {
+        toast({ title: `Добавлено: ${tpl.title}` });
+      }
     } catch (e: any) {
       toast({ variant: "destructive", title: "Ошибка", description: e?.message ?? "Ошибка" });
       return;
@@ -232,7 +251,6 @@ const Diary = () => {
     void checkAndUpdateStreak(user.uid).catch(() => {
       // ignore
     });
-    toast({ title: `Добавлено: ${tpl.title}` });
   };
 
   const updateGrams = async (id: string, delta: number) => {
